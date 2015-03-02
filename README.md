@@ -15,7 +15,7 @@ Usage
 Barber has a single annotation that you use, `@StyledAttr`. This can be used on either fields (if you want to keep the value) or methods (specifically, setters).
 
 ```java
-public class MyCustomView extends FrameLayout {
+public class BarberView extends FrameLayout {
 
     @StyledAttr(value = R.styleable.BarberView_stripeColor, kind = Kind.COLOR)
     public int stripeColor;
