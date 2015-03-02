@@ -26,7 +26,18 @@ public class MyCustomView extends FrameLayout {
     @StyledAttr(R.styleable.BarberView_animated)
     public boolean isAnimated;
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public BarberView(Context context) {
+        super(context);
+    }
+
+    public BarberView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public BarberView(Context context, AttributeSet attrs, int defStyleAttr) {
+        this(context, attrs, defStyleAttr, 0);
+    }
+
     public BarberView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         Barber.style(this, attrs, R.styleable.BarberView, defStyleAttr, defStyleRes);
@@ -42,7 +53,7 @@ public class MyCustomView extends FrameLayout {
 There's a few things to note here:
 
 * By default, Barber will resolve which `TypedArray` method to use based on the type of the target. That is, if you declare it on an `int`, then Barber will generate code that calls `typedArray.getInt(...)`.
-* If you have a special case, such as colors, then you can specify the `kind` member of the annotation with the appropriate `Kind` enum to let Barber know. For example, the color example above tells Barber it should use `TypedArray`'s `getColor(...)` method. See the [Kind enum](link) for a full list of supported types.
+* If you have a special case, such as colors, then you can specify the `kind` member of the annotation with the appropriate `Kind` enum to let Barber know. For example, the color example above tells Barber it should use `TypedArray`'s `getColor(...)` method. See the [Kind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/java/io/sweers/barber/Kind.java) for a full list of supported types.
 * Due to limitations of how annotations work, you cannot specify a default value in the annotation. However, Barber *will not* override any existing values on a field if there is no value at that index. So if you want a default value, initialize the field to it. Unfortunately, annotated setters are out of luck here.
 * The Barber class has 3 overloaded `style()` methods, so you can call the appropriate one from whichever constructor you prefer.
 
