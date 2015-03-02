@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<io.sweers.barber.sample.BarberView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:barber="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    barber:stripeColor="@android:color/holo_red_light"
+    barber:stripeCount="3"
+    barber:animated="true"
+    barber:refreshDrawable="@drawable/ic_action_refresh"
+    barber:titleText="Barber"
+    barber:subtitleText="Style shouldn't be hard."
+    barber:buzzwords="@array/buzzwords"
+    barber:maxBuzzwords="3"
+    barber:buttonColors="@color/button_selector"
+    barber:poleWidth="@fraction/fraction"
+    barber:speedFraction="@fraction/parent_fraction"
+    barber:stripeAlpha="0.75"
+    />

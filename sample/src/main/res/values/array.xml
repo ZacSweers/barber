@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="buzzwords">
+        <item>Cloud</item>
+        <item>Ubiquitous</item>
+        <item>Intuitive</item>
+        <item>Disruptive</item>
+        <item>Cutting Edge</item>
+    </string-array>
+</resources>

@@ -1,0 +1,36 @@
+apply plugin: 'com.android.library'
+apply plugin: 'bintray-release'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+publish {
+    userOrg = 'pandanomic'
+    groupId = 'io.sweers'
+    artifactId = 'barber-api'
+    version = '1.0.0'
+    description = 'An annotation processor library for styling custom views.'
+    website = rootProject.ext.siteUrl
+    bintrayUser = rootProject.ext.bintrayUser
+    bintrayKey = rootProject.ext.bintrayKey
+    autoPublish = false
+}

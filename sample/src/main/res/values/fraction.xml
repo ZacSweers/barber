@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <fraction name="fraction">20%</fraction>
+    <fraction name="parent_fraction">50%p</fraction>
+</resources>

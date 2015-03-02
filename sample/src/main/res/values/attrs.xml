@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BarberView">
+        <attr name="stripeColor" format="color" />
+        <attr name="stripeCount" format="integer" />
+        <attr name="animated" format="boolean" />
+        <attr name="toggleAnimation" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="TestView">
+        <attr name="testBoolean" format="boolean" />
+        <attr name="testInt" format="integer" />
+        <attr name="testInteger" format="integer" />
+        <attr name="testColor" format="color" />
+        <attr name="testFloat" format="float" />
+        <attr name="testCharSequence" format="string" />
+        <attr name="testString" format="string" />
+        <attr name="testTextArray" format="reference" />
+        <attr name="testColorStateList" format="reference" />
+        <attr name="testDrawable" format="reference" />
+        <attr name="testFractionBase" format="fraction" />
+        <attr name="testFractionPBase" format="fraction" />
+        <attr name="testDimension" format="dimension" />
+        <attr name="testDimensionPixelSize" format="dimension" />
+        <attr name="testDimensionPixelOffset" format="dimension" />
+        <attr name="testResourceId" format="reference" />
+        <attr name="testNonResString1" format="string" />
+        <attr name="testNonResString2" format="string" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,47 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.1.0'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath 'com.novoda:bintray-release:0.2.7'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+
+    group = 'io.sweers.barber'
+    version = '1.0'
+}
+
+ext {
+    siteUrl = 'https://github.com/hzsweers/barber'
+    gitUrl = 'https://github.com/hzsweers/barber.git'
+    bintrayUser = 'pandanomic'
+    bintrayKey = getProp('BINTRAY_KEY')
+}
+
+subprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.2.1'
+}
+
+def getProp(key) {
+    try {
+        Properties props = new Properties()
+        props.load(new FileInputStream("private.props"))
+        def val = props.getProperty(key)
+        return val
+    } catch (FileNotFoundException ignored) {
+        return ''
+    }
+}
