@@ -3,8 +3,7 @@
     <declare-styleable name="BarberView">
         <attr name="stripeColor" format="color" />
         <attr name="stripeCount" format="integer" />
-        <attr name="animated" format="boolean" />
-        <attr name="toggleAnimation" format="reference" />
+        <attr name="poleWidth" format="dimension" />
     </declare-styleable>
 
     <declare-styleable name="TestView">

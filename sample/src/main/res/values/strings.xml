@@ -5,4 +5,14 @@
     <string name="action_settings">Settings</string>
 
     <string name="testStringRes">Hello</string>
+
+    <string name="about_body"><![CDATA[
+        A view attribute "injection" library for Android that generates the obtainStyledAttributes() and TypedArray boilerplate code for you.<br/><br/>
+        Written by Henri (Zac) Sweers.<br/><br/>
+        <a href=\'http://hzsweers.github.io\'>Website</a>&nbsp;&nbsp;
+        <a href=\'https://twitter.com/pandanomic\'>Twitter</a>&nbsp;&nbsp;
+        <a href=\'https://google.com/+HenriSweers\'>Google+</a>&nbsp;&nbsp;
+        <a href=\'https://github.com/hzsweers\'>GitHub</a>&nbsp;&nbsp;
+        <a href=\'https://www.linkedin.com/profile/view?id=126301011\'>LinkedIn</a>
+    ]]></string>
 </resources>
