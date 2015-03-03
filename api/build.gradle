@@ -19,8 +19,8 @@ android {
 
 publish {
     userOrg = 'pandanomic'
-    groupId = 'io.sweers'
-    artifactId = 'barber-api'
+    groupId = 'io.sweers.barber'
+    artifactId = 'api'
     version = '1.0.0'
     description = 'An annotation processor library for styling custom views.'
     website = rootProject.ext.siteUrl
