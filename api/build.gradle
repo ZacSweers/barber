@@ -6,10 +6,10 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 14
         targetSdkVersion 21
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0.1"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -21,10 +21,9 @@ publish {
     userOrg = 'pandanomic'
     groupId = 'io.sweers.barber'
     artifactId = 'barber-api'
-    version = '1.0.0'
+    version = '1.0.1'
     description = 'An annotation processor library for styling custom views.'
     website = rootProject.ext.siteUrl
     bintrayUser = rootProject.ext.bintrayUser
     bintrayKey = rootProject.ext.bintrayKey
-    autoPublish = false
 }
