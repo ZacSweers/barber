@@ -10,7 +10,7 @@ Barber is your personal custom view stylist.
 
 Usage
 -----
-Barber has a single annotation that you use, `@StyledAttr`. This can be used on either fields (if you want to keep the value) or methods (specifically, setters).
+Barber has a single annotation that you use: `@StyledAttr`. This can be used on either fields (if you want to keep the value) or methods (specifically, setters).
 
 ```java
 public class BarberView extends FrameLayout {
