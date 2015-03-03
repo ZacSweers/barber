@@ -8,6 +8,8 @@ Barber is your personal custom view stylist.
 * Let `Barber` take care of all the obtainStyledAttributes() and TypedArray boilerplate for you.
 * Profit
 
+This library is heavily influenced by Jake Wharton's [Butterknife](https://github.com/JakeWharton/butterknife) library, and was actually [suggested to me](http://www.reddit.com/r/androiddev/comments/2ue4rm/i_want_to_learn_annotation_processing_but_cant/co7n093?context=3) by the man himself.
+
 Usage
 -----
 Barber has a single annotation that you use: `@StyledAttr`. This can be used on either fields (if you want to keep the value) or methods (specifically, setters).
@@ -89,6 +91,8 @@ public float testFractionBase;
 ```
 
 See the [Kind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/java/io/sweers/barber/Kind.java) for a full list of supported types.
+
+Note that these fields or methods cannot be private, and must at least be package accessible. This is because Barber will generate a `**$$Barbershop` class in the same package as the target class.
 
 A word about default values
 ---------------------------
