@@ -1,13 +1,11 @@
 Barber
 ======
 
-A view attribute "injection" library for Android that generates the obtainStyledAttributes() and TypedArray boilerplate code for you.
-
 Barber is your personal custom view stylist.
 
 * Simply annotate your fields using the `@StyledAttr` annotation
 * Call the appropriate `Barber.style(this...)` variant
-* Let `Barber` take care of all the boilerplate for you to retrieve their values.
+* Let `Barber` take care of all the obtainStyledAttributes() and TypedArray boilerplate for you.
 * Profit
 
 Usage
@@ -50,12 +48,51 @@ public class BarberView extends FrameLayout {
 }
 ```
 
-There's a few things to note here:
+The Barber class has 3 overloaded `style()` methods, so you can call the appropriate one from whichever constructor you prefer.
 
-* By default, Barber will resolve which `TypedArray` method to use based on the type of the target. That is, if you declare it on an `int`, then Barber will generate code that calls `typedArray.getInt(...)`.
-* If you have a special case, such as colors, then you can specify the `kind` member of the annotation with the appropriate `Kind` enum to let Barber know. For example, the color example above tells Barber it should use `TypedArray`'s `getColor(...)` method. See the [Kind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/java/io/sweers/barber/Kind.java) for a full list of supported types.
-* Due to limitations of how annotations work, you cannot specify a default value in the annotation. However, Barber *will not* override any existing values on a field if there is no value at that index. So if you want a default value, initialize the field to it. Unfortunately, annotated setters are out of luck here.
-* The Barber class has 3 overloaded `style()` methods, so you can call the appropriate one from whichever constructor you prefer.
+By default, Barber will resolve which `TypedArray` method to use based on the type of the target. That is, if you declare it on an `int`, then Barber will generate code that calls `typedArray.getInt(...)`.
+
+```java
+@StyledAttr(R.styleable.BarberView_stripeCount)
+public int stripeCount;
+```
+
+*"But wait, sometimes my int is a color!".*
+
+If you have a special case, such as colors, then you can specify the `kind` member of the annotation with the appropriate `Kind` enum to let Barber know.
+
+ ```java
+ @StyledAttr(value = R.styleable.BarberView_stripeColor, kind = Kind.COLOR)
+ public int stripeColor;
+ ```
+
+The color example above tells Barber it should use `TypedArray`'s `getColor(...)` method. This works for other types as well!
+
+```java
+@StyledAttr(value = R.styleable.TestView_testDimension, kind = Kind.DIMEN)
+public float testDimension;
+
+@StyledAttr(value = R.styleable.TestView_testDimensionPixelSize, kind = Kind.DIMEN_PIXEL_SIZE)
+public int testDimensionPixelSize;
+```
+
+And, if you're one of the 10 people that use fraction attributes, you'll be happy to know that those are supported as well.
+
+```java
+@StyledAttr(
+        value = R.styleable.TestView_testFractionBase,
+        kind = Kind.FRACTION,
+        base = 2,
+        pbase = 2
+)
+public float testFractionBase;
+```
+
+See the [Kind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/java/io/sweers/barber/Kind.java) for a full list of supported types.
+
+A word about default values
+---------------------------
+Due to limitations of how annotations work, you cannot specify a default value in the annotation. However, Barber *will not* override any existing values on a field if there is no value at that index. So if you want a default value, initialize the field to it. Unfortunately, annotated setters are out of luck here.
 
 Installation
 ------------
