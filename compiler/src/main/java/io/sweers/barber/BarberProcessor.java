@@ -25,9 +25,6 @@ import javax.tools.Diagnostic;
 @AutoService(Processor.class)
 public class BarberProcessor extends AbstractProcessor {
 
-    public static final String ANDROID_PREFIX = "android.";
-    public static final String JAVA_PREFIX = "java.";
-
     public static Processor instance;
     public Types typeUtils;
     public Elements elementUtils;

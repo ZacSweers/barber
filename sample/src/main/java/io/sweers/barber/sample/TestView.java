@@ -6,7 +6,6 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import io.sweers.barber.Barber;
@@ -91,14 +90,14 @@ public class TestView extends View {
     }
 
     public TestView(Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
+        super(context, attrs, defStyleAttr);
+        Barber.style(this, attrs, R.styleable.TestView, defStyleAttr);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public TestView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         Barber.style(this, attrs, R.styleable.TestView, defStyleAttr, defStyleRes);
-        Log.d("BLAH", toString());
     }
 
     @StyledAttr(R.styleable.TestView_testFloat)

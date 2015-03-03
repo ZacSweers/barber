@@ -15,7 +15,7 @@ import io.sweers.barber.Kind;
 import io.sweers.barber.StyledAttr;
 
 /**
- * Created by hsweers on 2/24/15.
+ * Sample view showcasing Barber's ease-of-use
  */
 public class BarberView extends FrameLayout {
 
