@@ -26,4 +26,8 @@
         <attr name="testNonResString1" format="string" />
         <attr name="testNonResString2" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="ChildTestView">
+        <attr name="coolNumber" format="integer" />
+    </declare-styleable>
 </resources>

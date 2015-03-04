@@ -10,12 +10,14 @@ import java.util.Arrays;
 public class BarberTest extends AndroidTestCase {
 
     private TestView testView;
+    private ChildTestView childTestView;
     private Resources res;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         testView = (TestView) View.inflate(getContext(), R.layout.test_view, null);
+        childTestView = (ChildTestView) View.inflate(getContext(), R.layout.child_test_view, null);
         res = getContext().getResources();
     }
 
@@ -111,5 +113,12 @@ public class BarberTest extends AndroidTestCase {
     public void testNonResString() {
         assertEquals("Hello", testView.testNonResString1);
         assertNull(testView.testNonResString2);
+    }
+
+    @SmallTest
+    public void testInheritance() {
+        assertTrue(childTestView.testBoolean);
+        assertEquals(3, childTestView.testInt);
+        assertEquals(3, childTestView.coolNumber);
     }
 }
