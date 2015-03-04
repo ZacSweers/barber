@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="40dp"
-        android:text="(Poorly designed barber's pole.)"
+        android:text="(Poorly designed barber's pole)"
         android:textSize="18sp"
         android:gravity="center"
         />
