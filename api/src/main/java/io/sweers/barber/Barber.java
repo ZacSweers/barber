@@ -4,8 +4,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -21,9 +19,9 @@ public class Barber {
     public static final String ANDROID_PREFIX = "android.";
     public static final String JAVA_PREFIX = "java.";
     private static final String TAG = "Barber";
-    private static final Method NO_OP = null;
+    private static final IBarbershop<View> NO_OP = null;
     private static boolean debug = false;
-    private static final Map<Class<?>, Method> BARBERSHOPS = new LinkedHashMap<>();
+    private static final Map<Class<?>, IBarbershop<View>> BARBERSHOPS = new LinkedHashMap<>();
 
     public static void style(View target, AttributeSet set, int[] attrs) {
         style(target, set, attrs, 0);
@@ -35,35 +33,26 @@ public class Barber {
 
     public static void style(View target, AttributeSet set, int[] attrs, int defStyleAttr, int defStyleRes) {
         Class<?> targetClass = target.getClass();
-        try {
-            if (debug) {
-                Log.d(TAG, "Looking up barbershop for " + targetClass.getName());
-            }
-            Method style = findStyleMethodForClass(targetClass);
-            if (style != NO_OP) {
-                style.invoke(null, target, set, attrs, defStyleAttr, defStyleRes);
-            }
-        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-            Throwable t = e;
-            if (t instanceof InvocationTargetException) {
-                t = t.getCause();
-            }
-            throw new RuntimeException("Unable to inject styleable value for " + target, t);
+        if (debug) {
+            Log.d(TAG, "Looking up barbershop for " + targetClass.getName());
+        }
+        IBarbershop<View> barbershop = findBarbershopForClass(targetClass);
+        if (barbershop != NO_OP) {
+            barbershop.style(target, set, attrs, defStyleAttr, defStyleRes);
         }
     }
 
     /**
-     * Searches for the style() method given an instance of a generated class. Caches for efficiency.
+     * Searches for $$Barbershop class for the given instance, cached for efficiency.
      *
-     * @param cls Instance of a *$$Barbershop instance
-     * @return style Method for the instance
-     * @throws NoSuchMethodException
+     * @param cls Source class to find a matching $$Barbershop class for
+     * @return $$Barbershop class instance
      */
-    private static Method findStyleMethodForClass(Class<?> cls) throws NoSuchMethodException {
-        Method style = BARBERSHOPS.get(cls);
-        if (style != null) {
-            if (debug) Log.d(TAG, "HIT: Cached in shop map.");
-            return style;
+    private static IBarbershop<View> findBarbershopForClass(Class<?> cls) {
+        IBarbershop<View> barbershop = BARBERSHOPS.get(cls);
+        if (barbershop != null) {
+            if (debug) Log.d(TAG, "HIT: Cached in barbershop map.");
+            return barbershop;
         }
         String clsName = cls.getName();
         if (clsName.startsWith(ANDROID_PREFIX) || clsName.startsWith(JAVA_PREFIX)) {
@@ -73,8 +62,9 @@ public class Barber {
             return NO_OP;
         }
         try {
-            Class<?> barbershop = Class.forName(clsName + SUFFIX);
-            style = barbershop.getMethod("style", cls, AttributeSet.class, int[].class, int.class, int.class);
+            Class<?> barbershopClass = Class.forName(clsName + SUFFIX);
+            //noinspection unchecked
+            barbershop = (IBarbershop<View>) barbershopClass.newInstance();
             if (debug) {
                 Log.d(TAG, "HIT: Class loaded barbershop class.");
             }
@@ -82,10 +72,16 @@ public class Barber {
             if (debug) {
                 Log.d(TAG, "Not found. Trying superclass " + cls.getSuperclass().getName());
             }
-            style = findStyleMethodForClass(cls.getSuperclass());
+            barbershop = findBarbershopForClass(cls.getSuperclass());
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
         }
-        BARBERSHOPS.put(cls, style);
-        return style;
+        BARBERSHOPS.put(cls, barbershop);
+        return barbershop;
     }
 
+    /** DO NOT USE. Exposed for generated classes' use. */
+    public interface IBarbershop<T> {
+        public void style(final T target, final AttributeSet set, final int[] attrs, final int defStyleAttr, final int defStyleRes);
+    }
 }

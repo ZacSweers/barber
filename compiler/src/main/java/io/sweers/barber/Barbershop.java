@@ -6,7 +6,9 @@ import android.util.AttributeSet;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,12 +33,17 @@ class Barbershop {
     private final String className;
     private final String targetClass;
     private final Map<Integer, FieldBinding> fieldBindings;
+    private String parentBarbershop;
 
     Barbershop(String classPackage, String className, String targetClass) {
         this.classPackage = classPackage;
         this.className = className;
         this.targetClass = targetClass;
         this.fieldBindings = new HashMap<>();
+    }
+
+    void setParentBarbershop(String parentBarbershop) {
+        this.parentBarbershop = parentBarbershop;
     }
 
     /**
@@ -46,11 +53,19 @@ class Barbershop {
      * @throws IOException
      */
     public void writeToFiler(Filer filer) throws IOException {
-        TypeSpec.Builder bridge = TypeSpec.classBuilder(className)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+        ClassName targetClassName = ClassName.get(classPackage, targetClass);
+        TypeSpec.Builder barberShop = TypeSpec.classBuilder(className)
+                .addModifiers(Modifier.PUBLIC)
+                .addTypeVariable(TypeVariableName.get("T", targetClassName))
                 .addMethod(generateStyleMethod());
 
-        JavaFile javaFile = JavaFile.builder(classPackage, bridge.build()).build();
+        if (parentBarbershop == null) {
+            barberShop.addSuperinterface(ParameterizedTypeName.get(ClassName.get(Barber.IBarbershop.class), TypeVariableName.get("T")));
+        } else {
+            barberShop.superclass(ParameterizedTypeName.get(ClassName.bestGuess(parentBarbershop), TypeVariableName.get("T")));
+        }
+
+        JavaFile javaFile = JavaFile.builder(classPackage, barberShop.build()).build();
         javaFile.writeTo(filer);
     }
 
@@ -59,18 +74,22 @@ class Barbershop {
      * @return A complete MethodSpec implementation for the class's style() method.
      */
     private MethodSpec generateStyleMethod() {
-        ClassName targetClassName = ClassName.get(classPackage, targetClass);
         MethodSpec.Builder builder = MethodSpec.methodBuilder("style")
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
-                .addParameter(targetClassName, "target", Modifier.FINAL)
+                .addParameter(TypeVariableName.get("T"), "target", Modifier.FINAL)
                 .addParameter(AttributeSet.class, "set", Modifier.FINAL)
                 .addParameter(int[].class, "attrs", Modifier.FINAL)
                 .addParameter(int.class, "defStyleAttr", Modifier.FINAL)
-                .addParameter(int.class, "defStyleRes", Modifier.FINAL)
+                .addParameter(int.class, "defStyleRes", Modifier.FINAL);
 
-                // Don't do anything if there's no AttributeSet instance
-                .beginControlFlow("if (set == null)")
+        if (parentBarbershop != null) {
+            builder.addStatement("super.style(target, set, attrs, defStyleAttr, defStyleRes)");
+        }
+
+        // Don't do anything if there's no AttributeSet instance
+        builder.beginControlFlow("if (set == null)")
                 .addStatement("return")
                 .endControlFlow()
 

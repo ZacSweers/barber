@@ -5,6 +5,7 @@ import com.google.auto.service.AutoService;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,6 +19,9 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
@@ -56,6 +60,7 @@ public class BarberProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         Map<TypeElement, Barbershop> targetClassMap = new LinkedHashMap<>();
+        Set<String> erasedTargetNames = new LinkedHashSet<>();
 
         for (Element element : roundEnv.getElementsAnnotatedWith(StyledAttr.class)) {
             try {
@@ -64,10 +69,17 @@ public class BarberProcessor extends AbstractProcessor {
                     return false;
                 }
                 TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
-                Barbershop barbershop = getOrCreateBarber(targetClassMap, enclosingElement);
+                Barbershop barbershop = getOrCreateBarber(targetClassMap, enclosingElement, erasedTargetNames);
                 barbershop.createAndAddBinding(element);
             } catch (Exception e) {
                 error(element, "%s", e.getMessage());
+            }
+        }
+
+        for (Map.Entry<TypeElement, Barbershop> entry : targetClassMap.entrySet()) {
+            String parentClassFqcn = findParentFqcn(entry.getKey(), erasedTargetNames);
+            if (parentClassFqcn != null) {
+                entry.getValue().setParentBarbershop(parentClassFqcn + Barber.SUFFIX);
             }
         }
 
@@ -82,7 +94,7 @@ public class BarberProcessor extends AbstractProcessor {
         return true;
     }
 
-    private Barbershop getOrCreateBarber(Map<TypeElement, Barbershop> targetClassMap, TypeElement enclosingElement) {
+    private Barbershop getOrCreateBarber(Map<TypeElement, Barbershop> targetClassMap, TypeElement enclosingElement, Set<String> erasedTargetNames) {
         Barbershop barbershop = targetClassMap.get(enclosingElement);
         if (barbershop == null) {
             String targetType = enclosingElement.getQualifiedName().toString();
@@ -90,9 +102,28 @@ public class BarberProcessor extends AbstractProcessor {
             String className = getClassName(enclosingElement, classPackage) + Barber.SUFFIX;
             barbershop = new Barbershop(classPackage, className, targetType);
             targetClassMap.put(enclosingElement, barbershop);
+            erasedTargetNames.add(enclosingElement.toString());
         }
 
         return barbershop;
+    }
+
+    /**
+     * Finds the parent barbershop type in the supplied set, if any.
+     */
+    private String findParentFqcn(TypeElement typeElement, Set<String> parents) {
+        TypeMirror type;
+        while (true) {
+            type = typeElement.getSuperclass();
+            if (type.getKind() == TypeKind.NONE) {
+                return null;
+            }
+            typeElement = (TypeElement) ((DeclaredType) type).asElement();
+            if (parents.contains(typeElement.toString())) {
+                String packageName = getPackageName(typeElement);
+                return packageName + "." + getClassName(typeElement, packageName);
+            }
+        }
     }
 
     private void error(Element e, String msg, Object... args) {
