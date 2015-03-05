@@ -11,6 +11,7 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,7 +58,9 @@ class Barbershop {
         TypeSpec.Builder barberShop = TypeSpec.classBuilder(className)
                 .addModifiers(Modifier.PUBLIC)
                 .addTypeVariable(TypeVariableName.get("T", targetClassName))
-                .addMethod(generateStyleMethod());
+                .addMethod(generateStyleMethod())
+                .addMethod(generateCheckParentMethod())
+                .addField(ParameterizedTypeName.get(ClassName.get(WeakReference.class), TypeVariableName.get("T")), "lastStyledTarget");
 
         if (parentBarbershop == null) {
             barberShop.addSuperinterface(ParameterizedTypeName.get(ClassName.get(Barber.IBarbershop.class), TypeVariableName.get("T")));
@@ -85,8 +88,14 @@ class Barbershop {
                 .addParameter(int.class, "defStyleRes", Modifier.FINAL);
 
         if (parentBarbershop != null) {
-            builder.addStatement("super.style(target, set, attrs, defStyleAttr, defStyleRes)");
+            builder.beginControlFlow("if (!super.hasStyled(target))")
+                    .addStatement("super.style(target, set, attrs, defStyleAttr, defStyleRes)")
+                    .addStatement("return")
+                    .endControlFlow();
         }
+
+        // Update our latest target
+        builder.addStatement("this.lastStyledTarget = new WeakReference<>(target)");
 
         // Don't do anything if there's no AttributeSet instance
         builder.beginControlFlow("if (set == null)")
@@ -111,6 +120,20 @@ class Barbershop {
         }
 
         builder.addStatement("a.recycle()");
+
+        return builder.build();
+    }
+
+    private MethodSpec generateCheckParentMethod() {
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("hasStyled")
+                .returns(boolean.class)
+                .addModifiers(Modifier.PROTECTED)
+                .addParameter(TypeVariableName.get("T"), "target", Modifier.FINAL)
+                .addStatement("return this.lastStyledTarget != null && this.lastStyledTarget.get() != null && this.lastStyledTarget.get() == target");
+
+        if (parentBarbershop != null) {
+            builder.addAnnotation(Override.class);
+        }
 
         return builder.build();
     }
