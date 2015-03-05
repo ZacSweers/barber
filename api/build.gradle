@@ -2,14 +2,14 @@ apply plugin: 'com.android.library'
 apply plugin: 'bintray-release'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 1
-        versionName "1.0.1"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -19,9 +19,9 @@ android {
 
 publish {
     userOrg = 'pandanomic'
-    groupId = 'io.sweers.barber'
+    groupId = rootProject.ext.groupName
     artifactId = 'barber-api'
-    version = '1.0.1'
+    version = rootProject.ext.versionName
     description = 'An annotation processor library for styling custom views.'
     website = rootProject.ext.siteUrl
     bintrayUser = rootProject.ext.bintrayUser

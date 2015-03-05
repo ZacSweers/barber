@@ -9,20 +9,27 @@ buildscript {
     }
 }
 
+ext {
+    Properties props = new Properties()
+    props.load(new FileInputStream("private.props"))
+    siteUrl = 'https://github.com/hzsweers/barber'
+    gitUrl = 'https://github.com/hzsweers/barber.git'
+    bintrayUser = 'pandanomic'
+    bintrayKey = props.getProperty('BINTRAY_KEY')
+    versionName = props.getProperty('VERSION_NAME')
+    versionCode = props.getProperty('VERSION_CODE').toInteger()
+    groupName = 'io.sweers.barber'
+    compileSdkVersion = 21
+    buildToolsVersion = "21.1.2"
+}
+
 allprojects {
     repositories {
         jcenter()
     }
 
-    group = 'io.sweers.barber'
-    version = '1.0'
-}
-
-ext {
-    siteUrl = 'https://github.com/hzsweers/barber'
-    gitUrl = 'https://github.com/hzsweers/barber.git'
-    bintrayUser = 'pandanomic'
-    bintrayKey = getProp('BINTRAY_KEY')
+    group = rootProject.ext.groupName
+    version = rootProject.ext.versionName
 }
 
 subprojects {
@@ -33,15 +40,4 @@ subprojects {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.2.1'
-}
-
-def getProp(key) {
-    try {
-        Properties props = new Properties()
-        props.load(new FileInputStream("private.props"))
-        def val = props.getProperty(key)
-        return val
-    } catch (FileNotFoundException ignored) {
-        return ''
-    }
 }

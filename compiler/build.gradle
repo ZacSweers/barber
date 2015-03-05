@@ -22,9 +22,9 @@ dependencies {
 
 publish {
     userOrg = 'pandanomic'
-    groupId = 'io.sweers.barber'
+    groupId = rootProject.ext.groupName
     artifactId = 'barber-compiler'
-    version = '1.0.1'
+    version = rootProject.ext.versionName
     description = 'An annotation processor library for styling custom views.'
     website = rootProject.ext.siteUrl
     bintrayUser = rootProject.ext.bintrayUser

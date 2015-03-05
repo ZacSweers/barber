@@ -2,15 +2,15 @@ apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        applicationId "io.sweers.barber.sample"
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+        applicationId "${rootProject.ext.groupName}.sample"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 2
-        versionName "1.0.1"
     }
     buildTypes {
         release {
