@@ -118,7 +118,10 @@ public class BarberTest extends AndroidTestCase {
     @SmallTest
     public void testInheritance() {
         assertTrue(childTestView.testBoolean);
+//        assertNull(childTestView.testString);
         assertEquals(3, childTestView.testInt);
-        assertEquals(3, childTestView.coolNumber);
+//        assertEquals(3, childTestView.childInt);
+//        assertTrue(childTestView.childBoolean);
+//        assertEquals("child", childTestView.childString);
     }
 }

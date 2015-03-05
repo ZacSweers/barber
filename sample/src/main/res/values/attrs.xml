@@ -28,6 +28,8 @@
     </declare-styleable>
 
     <declare-styleable name="ChildTestView">
-        <attr name="coolNumber" format="integer" />
+        <attr name="childInt" format="integer" />
+        <attr name="childBoolean" format="boolean" />
+        <attr name="childString" format="string" />
     </declare-styleable>
 </resources>

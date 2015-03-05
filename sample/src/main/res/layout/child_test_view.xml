@@ -21,5 +21,7 @@
     barber:testResourceId="@array/buzzwords"
     barber:testNonResString1="Hello"
     barber:testNonResString2="@string/testStringRes"
-    barber:coolNumber="3"
+    barber:childInt="3"
+    barber:childBoolean="true"
+    barber:childString="child"
     />

@@ -13,8 +13,14 @@ import io.sweers.barber.StyledAttr;
  */
 public class ChildTestView extends TestView {
 
-    @StyledAttr(R.styleable.ChildTestView_coolNumber)
-    protected int coolNumber = 0;
+    @StyledAttr(R.styleable.ChildTestView_childInt)
+    protected int childInt = 0;
+
+    @StyledAttr(R.styleable.ChildTestView_childBoolean)
+    protected boolean childBoolean = false;
+
+    @StyledAttr(R.styleable.ChildTestView_childString)
+    protected String childString;
 
     public ChildTestView(Context context) {
         super(context);
