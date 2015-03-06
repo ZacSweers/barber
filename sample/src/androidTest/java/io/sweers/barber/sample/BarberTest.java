@@ -11,6 +11,7 @@ public class BarberTest extends AndroidTestCase {
 
     private TestView testView;
     private ChildTestView childTestView;
+    private GrandChildTestView grandChildTestView;
     private Resources res;
 
     @Override
@@ -18,6 +19,7 @@ public class BarberTest extends AndroidTestCase {
         super.setUp();
         testView = (TestView) View.inflate(getContext(), R.layout.test_view, null);
         childTestView = (ChildTestView) View.inflate(getContext(), R.layout.child_test_view, null);
+        grandChildTestView = (GrandChildTestView) View.inflate(getContext(), R.layout.grand_child_test_view, null);
         res = getContext().getResources();
     }
 
@@ -118,10 +120,11 @@ public class BarberTest extends AndroidTestCase {
     @SmallTest
     public void testInheritance() {
         assertTrue(childTestView.testBoolean);
-//        assertNull(childTestView.testString);
+        assertNull(childTestView.testString);
         assertEquals(3, childTestView.testInt);
-//        assertEquals(3, childTestView.childInt);
-//        assertTrue(childTestView.childBoolean);
-//        assertEquals("child", childTestView.childString);
+        assertEquals(3, childTestView.childInt);
+        assertTrue(childTestView.childBoolean);
+        assertEquals("child", childTestView.childString);
+        assertEquals("grandChild", grandChildTestView.grandChildString);
     }
 }

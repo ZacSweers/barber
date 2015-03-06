@@ -32,4 +32,9 @@
         <attr name="childBoolean" format="boolean" />
         <attr name="childString" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="GrandChildTestView">
+        <attr name="grandChildString" format="string" />
+    </declare-styleable>
+
 </resources>
