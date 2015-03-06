@@ -4,6 +4,7 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -11,7 +12,6 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,11 +59,11 @@ class Barbershop {
                 .addModifiers(Modifier.PUBLIC)
                 .addTypeVariable(TypeVariableName.get("T", targetClassName))
                 .addMethod(generateStyleMethod())
-                .addMethod(generateCheckParentMethod())
-                .addField(ParameterizedTypeName.get(ClassName.get(WeakReference.class), TypeVariableName.get("T")), "lastStyledTarget");
+                .addMethod(generateCheckParentMethod());
 
         if (parentBarbershop == null) {
             barberShop.addSuperinterface(ParameterizedTypeName.get(ClassName.get(Barber.IBarbershop.class), TypeVariableName.get("T")));
+            barberShop.addField(FieldSpec.builder(WeakHashSet.class, "lastStyledTargets", Modifier.PROTECTED).initializer("new $T()", WeakHashSet.class).build());
         } else {
             barberShop.superclass(ParameterizedTypeName.get(ClassName.bestGuess(parentBarbershop), TypeVariableName.get("T")));
         }
@@ -95,7 +95,7 @@ class Barbershop {
         }
 
         // Update our latest target
-        builder.addStatement("this.lastStyledTarget = new WeakReference<>(target)");
+        builder.addStatement("this.lastStyledTargets.add(target)");
 
         // Don't do anything if there's no AttributeSet instance
         builder.beginControlFlow("if (set == null)")
@@ -129,7 +129,7 @@ class Barbershop {
                 .returns(boolean.class)
                 .addModifiers(Modifier.PROTECTED)
                 .addParameter(TypeVariableName.get("T"), "target", Modifier.FINAL)
-                .addStatement("return this.lastStyledTarget != null && this.lastStyledTarget.get() != null && this.lastStyledTarget.get() == target");
+                .addStatement("return this.lastStyledTargets.contains(target)");
 
         if (parentBarbershop != null) {
             builder.addAnnotation(Override.class);
