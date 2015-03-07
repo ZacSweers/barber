@@ -74,7 +74,7 @@ public class Barber {
             }
             barbershop = findBarbershopForClass(cls.getSuperclass());
         } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
         BARBERSHOPS.put(cls, barbershop);
         return barbershop;
