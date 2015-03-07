@@ -94,6 +94,20 @@ See the [Kind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/
 
 Note that these fields or methods cannot be private, and must at least be package accessible. This is because Barber will generate a `**$$Barbershop` class in the same package as the target class.
 
+Required attributes
+-------------------
+If you want to require an attribute to be specified (beyond just checking if the value is still the default), you can use the `@Required` annotation as well.
+
+```java
+@Required
+@StyledAttr(R.styleable.RequiredTestView_requiredString)
+public String requiredString;
+```
+
+Now, if a view is inflated without specifying this attribute, its generated `$$Barbershop` class will throw a Runtime exception looking like this:
+
+`Missing required attribute 'requiredString' while styling 'io.sweers.barber.sample.testing.RequiredTestView'`
+
 A word about default values
 ---------------------------
 Due to limitations of how annotations work, you cannot specify a default value in the annotation. However, Barber *will not* override any existing values on a field if there is no value at that index. So if you want a default value, initialize the field to it. Unfortunately, annotated setters are out of luck here.
