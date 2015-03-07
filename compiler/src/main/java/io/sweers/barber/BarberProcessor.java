@@ -39,6 +39,7 @@ public class BarberProcessor extends AbstractProcessor {
     public Set<String> getSupportedAnnotationTypes() {
         return new HashSet<String>() {{
             add(StyledAttr.class.getCanonicalName());
+            add(Required.class.getCanonicalName());
         }};
     }
 

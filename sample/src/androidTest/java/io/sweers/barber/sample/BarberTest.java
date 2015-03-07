@@ -131,4 +131,13 @@ public class BarberTest extends AndroidTestCase {
         assertEquals("child", childTestView.childString);
         assertEquals("grandChild", grandChildTestView.grandChildString);
     }
+
+    @SmallTest
+    public void testRequired() {
+        try {
+            View.inflate(getContext(), R.layout.test_view, null);
+        } catch (RuntimeException e) {
+            assertEquals("\"Missing required attribute \'requiredString\' while styling \'io.sweers.barber.sample.testing.RequiredTestView\'\"", e.getMessage());
+        }
+    }
 }

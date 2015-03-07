@@ -37,4 +37,8 @@
         <attr name="grandChildString" format="string" />
     </declare-styleable>
 
+    <declare-styleable name="RequiredTestView">
+        <attr name="requiredString" format="string" />
+    </declare-styleable>
+
 </resources>

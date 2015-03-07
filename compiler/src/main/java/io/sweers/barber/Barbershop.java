@@ -116,6 +116,10 @@ class Barbershop {
             } else {
                 builder.addStatement("target.$L = a.$L", binding.name, getFormattedStatementForBinding(binding));
             }
+            if (binding.isRequired) {
+                builder.nextControlFlow("else")
+                        .addStatement("throw new $T(\"Missing required attribute \'$L\' while styling \'$L\'\")", RuntimeException.class, binding.name, targetClass);
+            }
             builder.endControlFlow();
         }
 
@@ -223,6 +227,7 @@ class Barbershop {
 
         StyledAttr instance = element.getAnnotation(StyledAttr.class);
         FieldBinding binding = new FieldBinding(name, type, id, instance.kind());
+        binding.isRequired = element.getAnnotation(Required.class) != null;
         if (element.getKind() == ElementKind.METHOD) {
             binding.isMethod = true;
         }
@@ -241,6 +246,7 @@ class Barbershop {
         private int id;
         private Kind kind;
         private boolean isMethod;
+        private boolean isRequired;
 
         // Fractions
         private int fractBase;
