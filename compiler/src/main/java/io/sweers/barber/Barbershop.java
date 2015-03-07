@@ -118,7 +118,7 @@ class Barbershop {
             }
             if (binding.isRequired) {
                 builder.nextControlFlow("else")
-                        .addStatement("throw new $T(\"Missing required attribute \'$L\' while styling \'$L\'\")", RuntimeException.class, binding.name, targetClass);
+                        .addStatement("throw new $T(\"Missing required attribute \'$L\' while styling \'$L\'\")", IllegalStateException.class, binding.name, targetClass);
             }
             builder.endControlFlow();
         }
