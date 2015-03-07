@@ -26,4 +26,15 @@
         <attr name="testNonResString1" format="string" />
         <attr name="testNonResString2" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="ChildTestView">
+        <attr name="childInt" format="integer" />
+        <attr name="childBoolean" format="boolean" />
+        <attr name="childString" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="GrandChildTestView">
+        <attr name="grandChildString" format="string" />
+    </declare-styleable>
+
 </resources>

@@ -4,9 +4,12 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,12 +34,17 @@ class Barbershop {
     private final String className;
     private final String targetClass;
     private final Map<Integer, FieldBinding> fieldBindings;
+    private String parentBarbershop;
 
     Barbershop(String classPackage, String className, String targetClass) {
         this.classPackage = classPackage;
         this.className = className;
         this.targetClass = targetClass;
         this.fieldBindings = new HashMap<>();
+    }
+
+    void setParentBarbershop(String parentBarbershop) {
+        this.parentBarbershop = parentBarbershop;
     }
 
     /**
@@ -46,11 +54,21 @@ class Barbershop {
      * @throws IOException
      */
     public void writeToFiler(Filer filer) throws IOException {
-        TypeSpec.Builder bridge = TypeSpec.classBuilder(className)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addMethod(generateStyleMethod());
+        ClassName targetClassName = ClassName.get(classPackage, targetClass);
+        TypeSpec.Builder barberShop = TypeSpec.classBuilder(className)
+                .addModifiers(Modifier.PUBLIC)
+                .addTypeVariable(TypeVariableName.get("T", targetClassName))
+                .addMethod(generateStyleMethod())
+                .addMethod(generateCheckParentMethod());
 
-        JavaFile javaFile = JavaFile.builder(classPackage, bridge.build()).build();
+        if (parentBarbershop == null) {
+            barberShop.addSuperinterface(ParameterizedTypeName.get(ClassName.get(Barber.IBarbershop.class), TypeVariableName.get("T")));
+            barberShop.addField(FieldSpec.builder(WeakHashSet.class, "lastStyledTargets", Modifier.PROTECTED).initializer("new $T()", WeakHashSet.class).build());
+        } else {
+            barberShop.superclass(ParameterizedTypeName.get(ClassName.bestGuess(parentBarbershop), TypeVariableName.get("T")));
+        }
+
+        JavaFile javaFile = JavaFile.builder(classPackage, barberShop.build()).build();
         javaFile.writeTo(filer);
     }
 
@@ -59,18 +77,28 @@ class Barbershop {
      * @return A complete MethodSpec implementation for the class's style() method.
      */
     private MethodSpec generateStyleMethod() {
-        ClassName targetClassName = ClassName.get(classPackage, targetClass);
         MethodSpec.Builder builder = MethodSpec.methodBuilder("style")
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
-                .addParameter(targetClassName, "target", Modifier.FINAL)
+                .addParameter(TypeVariableName.get("T"), "target", Modifier.FINAL)
                 .addParameter(AttributeSet.class, "set", Modifier.FINAL)
                 .addParameter(int[].class, "attrs", Modifier.FINAL)
                 .addParameter(int.class, "defStyleAttr", Modifier.FINAL)
-                .addParameter(int.class, "defStyleRes", Modifier.FINAL)
+                .addParameter(int.class, "defStyleRes", Modifier.FINAL);
 
-                // Don't do anything if there's no AttributeSet instance
-                .beginControlFlow("if (set == null)")
+        if (parentBarbershop != null) {
+            builder.beginControlFlow("if (!super.hasStyled(target))")
+                    .addStatement("super.style(target, set, attrs, defStyleAttr, defStyleRes)")
+                    .addStatement("return")
+                    .endControlFlow();
+        }
+
+        // Update our latest target
+        builder.addStatement("this.lastStyledTargets.add(target)");
+
+        // Don't do anything if there's no AttributeSet instance
+        builder.beginControlFlow("if (set == null)")
                 .addStatement("return")
                 .endControlFlow()
 
@@ -92,6 +120,20 @@ class Barbershop {
         }
 
         builder.addStatement("a.recycle()");
+
+        return builder.build();
+    }
+
+    private MethodSpec generateCheckParentMethod() {
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("hasStyled")
+                .returns(boolean.class)
+                .addModifiers(Modifier.PROTECTED)
+                .addParameter(TypeVariableName.get("T"), "target", Modifier.FINAL)
+                .addStatement("return this.lastStyledTargets.contains(target)");
+
+        if (parentBarbershop != null) {
+            builder.addAnnotation(Override.class);
+        }
 
         return builder.build();
     }
