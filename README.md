@@ -104,7 +104,7 @@ If you want to require an attribute to be specified (beyond just checking if the
 public String requiredString;
 ```
 
-Now, if a view is inflated without specifying this attribute, its generated `$$Barbershop` class will throw a Runtime exception looking like this:
+Now, if a view is inflated without specifying this attribute, its generated `$$Barbershop` class will throw an IllegalStateException looking like this:
 
 `Missing required attribute 'requiredString' while styling 'io.sweers.barber.sample.testing.RequiredTestView'`
 
