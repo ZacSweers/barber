@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 
 import io.sweers.barber.Barber;
 import io.sweers.barber.Kind;
+import io.sweers.barber.Required;
 import io.sweers.barber.StyledAttr;
 
 /**
@@ -25,6 +26,7 @@ public class BarberView extends FrameLayout {
     @StyledAttr(R.styleable.BarberView_stripeCount)
     int stripeCount = 3;
 
+    @Required
     @StyledAttr(value = R.styleable.BarberView_poleWidth, kind = Kind.DIMEN_PIXEL_SIZE)
     int poleWidth;
 
