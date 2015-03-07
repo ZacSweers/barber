@@ -61,6 +61,7 @@ public class Barber {
             }
             return NO_OP;
         }
+        //noinspection TryWithIdenticalCatches
         try {
             Class<?> barbershopClass = Class.forName(clsName + SUFFIX);
             //noinspection unchecked
@@ -73,7 +74,9 @@ public class Barber {
                 Log.d(TAG, "Not found. Trying superclass " + cls.getSuperclass().getName());
             }
             barbershop = findBarbershopForClass(cls.getSuperclass());
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException e) {
+            Log.e(TAG, e.getMessage());
+        } catch (IllegalAccessException e) {
             Log.e(TAG, e.getMessage());
         }
         BARBERSHOPS.put(cls, barbershop);
