@@ -1,4 +1,4 @@
-package io.sweers.barber.sample;
+package io.sweers.barber.sample.testing;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 
 import io.sweers.barber.Barber;
 import io.sweers.barber.StyledAttr;
+import io.sweers.barber.sample.R;
 
 /**
  * Created by hsweers on 3/6/15.

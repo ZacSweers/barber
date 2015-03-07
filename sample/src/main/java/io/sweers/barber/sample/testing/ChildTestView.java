@@ -1,4 +1,4 @@
-package io.sweers.barber.sample;
+package io.sweers.barber.sample.testing;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 
 import io.sweers.barber.Barber;
 import io.sweers.barber.StyledAttr;
+import io.sweers.barber.sample.R;
 
 /**
  * Testing inheritance
@@ -14,13 +15,13 @@ import io.sweers.barber.StyledAttr;
 public class ChildTestView extends TestView {
 
     @StyledAttr(R.styleable.ChildTestView_childInt)
-    protected int childInt = 0;
+    public int childInt = 0;
 
     @StyledAttr(R.styleable.ChildTestView_childBoolean)
-    protected boolean childBoolean = false;
+    public boolean childBoolean = false;
 
     @StyledAttr(R.styleable.ChildTestView_childString)
-    protected String childString;
+    public String childString;
 
     public ChildTestView(Context context) {
         super(context);

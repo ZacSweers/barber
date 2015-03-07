@@ -7,6 +7,10 @@ import android.view.View;
 
 import java.util.Arrays;
 
+import io.sweers.barber.sample.testing.ChildTestView;
+import io.sweers.barber.sample.testing.GrandChildTestView;
+import io.sweers.barber.sample.testing.TestView;
+
 public class BarberTest extends AndroidTestCase {
 
     private TestView testView;

@@ -1,4 +1,4 @@
-package io.sweers.barber.sample;
+package io.sweers.barber.sample.testing;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -11,6 +11,7 @@ import android.view.View;
 import io.sweers.barber.Barber;
 import io.sweers.barber.Kind;
 import io.sweers.barber.StyledAttr;
+import io.sweers.barber.sample.R;
 
 /**
  * Test view used by BarberTest (see androidTest dir) to verify that the processor's working smoothly
