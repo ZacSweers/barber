@@ -128,8 +128,8 @@ buildscript {
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-    apt 'io.sweers.barber:barber-compiler:1.1.0'
-    compile 'io.sweers.barber:barber-api:1.1.0'
+    apt 'io.sweers.barber:barber-compiler:1.1.1'
+    compile 'io.sweers.barber:barber-api:1.1.1'
 }
 ```
 
