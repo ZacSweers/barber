@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:barber="http://schemas.android.com/apk/res-auto">
+
+    <io.sweers.barber.sample.testing.CustomPreference
+        android:key="custom_pref"
+        android:title="Here's a cool title"
+        android:summary="And here's a nifty summary"
+        barber:prefTitleColor="@android:color/holo_red_dark"
+        barber:prefSummaryColor="@android:color/holo_blue_dark"
+        />
+
+</PreferenceScreen>
