@@ -2,7 +2,6 @@ package io.sweers.barber;
 
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,7 +9,7 @@ import java.util.Map;
 /**
  * Entry point for applications.
  * <p>
- * Use one of the {@link #style(android.view.View, android.util.AttributeSet, int[])} variants to
+ * Use one of the {@link #style(java.lang.Object, android.util.AttributeSet, int[])} variants to
  * style your custom views.
  */
 public class Barber {
@@ -19,24 +18,24 @@ public class Barber {
     public static final String ANDROID_PREFIX = "android.";
     public static final String JAVA_PREFIX = "java.";
     private static final String TAG = "Barber";
-    private static final IBarbershop<View> NO_OP = null;
+    private static final IBarbershop<Object> NO_OP = null;
     private static boolean debug = false;
-    private static final Map<Class<?>, IBarbershop<View>> BARBERSHOPS = new LinkedHashMap<>();
+    private static final Map<Class<?>, IBarbershop<Object>> BARBERSHOPS = new LinkedHashMap<>();
 
-    public static void style(View target, AttributeSet set, int[] attrs) {
+    public static void style(Object target, AttributeSet set, int[] attrs) {
         style(target, set, attrs, 0);
     }
 
-    public static void style(View target, AttributeSet set, int[] attrs, int defStyleAttr) {
+    public static void style(Object target, AttributeSet set, int[] attrs, int defStyleAttr) {
         style(target, set, attrs, defStyleAttr, 0);
     }
 
-    public static void style(View target, AttributeSet set, int[] attrs, int defStyleAttr, int defStyleRes) {
+    public static void style(Object target, AttributeSet set, int[] attrs, int defStyleAttr, int defStyleRes) {
         Class<?> targetClass = target.getClass();
         if (debug) {
             Log.d(TAG, "Looking up barbershop for " + targetClass.getName());
         }
-        IBarbershop<View> barbershop = findBarbershopForClass(targetClass);
+        IBarbershop<Object> barbershop = findBarbershopForClass(targetClass);
         if (barbershop != NO_OP) {
             barbershop.style(target, set, attrs, defStyleAttr, defStyleRes);
         }
@@ -48,8 +47,8 @@ public class Barber {
      * @param cls Source class to find a matching $$Barbershop class for
      * @return $$Barbershop class instance
      */
-    private static IBarbershop<View> findBarbershopForClass(Class<?> cls) {
-        IBarbershop<View> barbershop = BARBERSHOPS.get(cls);
+    private static IBarbershop<Object> findBarbershopForClass(Class<?> cls) {
+        IBarbershop<Object> barbershop = BARBERSHOPS.get(cls);
         if (barbershop != null) {
             if (debug) Log.d(TAG, "HIT: Cached in barbershop map.");
             return barbershop;
@@ -65,7 +64,7 @@ public class Barber {
         try {
             Class<?> barbershopClass = Class.forName(clsName + SUFFIX);
             //noinspection unchecked
-            barbershop = (IBarbershop<View>) barbershopClass.newInstance();
+            barbershop = (IBarbershop<Object>) barbershopClass.newInstance();
             if (debug) {
                 Log.d(TAG, "HIT: Class loaded barbershop class.");
             }
