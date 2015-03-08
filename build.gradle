@@ -11,7 +11,7 @@ buildscript {
 
 ext {
     Properties props = new Properties()
-    props.load(new FileInputStream("private.props"))
+    props.load(new FileInputStream(file("private.props")))
     siteUrl = 'https://github.com/hzsweers/barber'
     gitUrl = 'https://github.com/hzsweers/barber.git'
     bintrayUser = 'pandanomic'
