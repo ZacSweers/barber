@@ -142,11 +142,9 @@ If you use Proguard, add the following lines to your rules
 ```
 -keep class **$$Barbershop { *; }
 -keep class io.sweers.barber.** { *; }
-
 -keepclasseswithmembernames class * {
     @io.sweers.barber.* <fields>;
 }
-
 -keepclasseswithmembernames class * {
     @io.sweers.barber.* <methods>;
 }
