@@ -10,7 +10,7 @@ android {
         versionName rootProject.ext.versionName
         applicationId "${rootProject.ext.groupName}.sample"
         minSdkVersion 14
-        targetSdkVersion 21
+        targetSdkVersion 22
     }
     buildTypes {
         release {
@@ -26,7 +26,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:appcompat-v7:22.0.0'
 
     apt project(':compiler')
     compile project(':api')

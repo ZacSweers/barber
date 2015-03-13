@@ -19,8 +19,8 @@ ext {
     versionName = props.getProperty('VERSION_NAME')
     versionCode = props.getProperty('VERSION_CODE').toInteger()
     groupName = 'io.sweers.barber'
-    compileSdkVersion = 21
-    buildToolsVersion = "21.1.2"
+    compileSdkVersion = 22
+    buildToolsVersion = "22.0.0"
 }
 
 allprojects {

@@ -9,7 +9,7 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
         minSdkVersion 14
-        targetSdkVersion 21
+        targetSdkVersion 22
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
