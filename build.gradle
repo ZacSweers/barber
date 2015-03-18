@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.0'
+        classpath 'com.android.tools.build:gradle:1.1.3'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
         classpath 'com.novoda:bintray-release:0.2.7'
     }
@@ -12,15 +12,15 @@ buildscript {
 ext {
     Properties props = new Properties()
     props.load(new FileInputStream(file("private.props")))
-    siteUrl = 'https://github.com/hzsweers/barber'
-    gitUrl = 'https://github.com/hzsweers/barber.git'
-    bintrayUser = 'pandanomic'
-    bintrayKey = props.getProperty('BINTRAY_KEY')
-    versionName = props.getProperty('VERSION_NAME')
-    versionCode = props.getProperty('VERSION_CODE').toInteger()
-    groupName = 'io.sweers.barber'
-    compileSdkVersion = 22
-    buildToolsVersion = "22.0.0"
+    SITE_URL = 'https://github.com/hzsweers/barber'
+    GIT_URL = 'https://github.com/hzsweers/barber.git'
+    BINTRAY_USER = 'pandanomic'
+    BINTRAY_KEY = props.getProperty('BINTRAY_KEY')
+    VERSION_NAME = props.getProperty('VERSION_NAME')
+    VERSION_CODE = props.getProperty('VERSION_CODE').toInteger()
+    GROUP_NAME = 'io.sweers.barber'
+    COMPILE_SDK = 22
+    BUILD_TOOLS = '22.0.0'
 }
 
 allprojects {
@@ -28,8 +28,8 @@ allprojects {
         jcenter()
     }
 
-    group = rootProject.ext.groupName
-    version = rootProject.ext.versionName
+    group = GROUP_NAME
+    version = VERSION_NAME
 }
 
 subprojects {

@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion COMPILE_SDK
+    buildToolsVersion BUILD_TOOLS
 
     defaultConfig {
-        versionCode rootProject.ext.versionCode
-        versionName rootProject.ext.versionName
-        applicationId "${rootProject.ext.groupName}.sample"
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
+        applicationId "${GROUP_NAME}.sample"
         minSdkVersion 14
         targetSdkVersion 22
     }
