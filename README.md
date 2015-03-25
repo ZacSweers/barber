@@ -13,7 +13,7 @@ This library is heavily influenced by Jake Wharton's [Butterknife](https://githu
 
 Usage
 -----
-First, declare your styled attributes in your ```attrs.xml```, like you normally would.
+Declare your styled attributes in your `attrs.xml`, like you normally would. For example:
 
 ```xml
 <declare-styleable name="BarberView">
