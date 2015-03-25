@@ -20,7 +20,7 @@ First, declare your styled attributes in your ```attrs.xml```, like you normally
     <attr name="stripeColor" format="color" />
     <attr name="stripeCount" format="integer" />
     <attr name="animated" format="boolean" />
-    <attr name="toggleAnimation" format="integer" />
+    <attr name="toggleAnimation" format="reference" />
 </declare-styleable>
 ```
 
