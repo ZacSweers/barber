@@ -13,6 +13,17 @@ This library is heavily influenced by Jake Wharton's [Butterknife](https://githu
 
 Usage
 -----
+First, declare your styled attributes in your ```attrs.xml```, like you normally would.
+
+```xml
+<declare-styleable name="BarberView">
+    <attr name="stripeColor" format="color" />
+    <attr name="stripeCount" format="integer" />
+    <attr name="animated" format="boolean" />
+    <attr name="toggleAnimation" format="reference" />
+</declare-styleable>
+```
+
 Barber has a single annotation that you use: `@StyledAttr`. This can be used on either fields (if you want to keep the value) or methods (specifically, setters).
 
 ```java
