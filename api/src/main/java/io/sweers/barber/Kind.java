@@ -20,21 +20,21 @@ public enum Kind {
     // float getDimension(...)
     DIMEN,
 
-    // int get(...)
+    // int getDimensionPixelOffset(...)
     DIMEN_PIXEL_OFFSET,
 
-    // int get(...)
+    // int getDimensionPixelSize(...)
     DIMEN_PIXEL_SIZE,
 
-    // float get(...)
+    // float getFraction(...)
     FRACTION,
 
-    // int get(...)
+    // int getInteger(...)
     INTEGER,
 
-    // int get(...)
+    // int getResourceId(...)
     RES_ID,
 
-    // String get(...)
+    // String getNonResourceString(...)
     NON_RES_STRING
 }
