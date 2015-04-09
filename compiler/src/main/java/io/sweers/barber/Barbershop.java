@@ -30,10 +30,13 @@ import static io.sweers.barber.Kind.STANDARD;
  */
 class Barbershop {
 
+    private static final String ANDROID_ATTR_NAMESPACE = "http://schemas.android.com/apk/res/android";
+
     private final String classPackage;
     private final String className;
     private final String targetClass;
-    private final Map<Integer, Binding> styleableBindings;
+    private final Map<Integer, StyleableBinding> styleableBindings;
+    private final Map<String, AndroidAttrBinding> androidAttrBindings;
     private String parentBarbershop;
 
     Barbershop(String classPackage, String className, String targetClass) {
@@ -41,6 +44,7 @@ class Barbershop {
         this.className = className;
         this.targetClass = targetClass;
         this.styleableBindings = new HashMap<>();
+        this.androidAttrBindings = new HashMap<>();
     }
 
     void setParentBarbershop(String parentBarbershop) {
@@ -105,7 +109,7 @@ class Barbershop {
                 // Proceed with obtaining the TypedArray if we got here
                 .addStatement("$T a = target.getContext().obtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes)", TypedArray.class);
 
-        for (Binding binding : styleableBindings.values()) {
+        for (StyleableBinding binding : styleableBindings.values()) {
             // Wrap the styling with if-statement to check if there's a value first, this way we can
             // keep existing default values if there isn't one and don't overwrite them.
             // TODO Remove this if possible to let user specify default values, but I haven't found a way yet.
@@ -142,10 +146,10 @@ class Barbershop {
         return builder.build();
     }
 
-    private String getFormattedStatementForBinding(Binding binding) {
+    private String getFormattedStatementForBinding(StyleableBinding styleableBinding) {
         String statement;
-        if (binding.kind == STANDARD) {
-            switch (binding.type) {
+        if (styleableBinding.kind == STANDARD) {
+            switch (styleableBinding.type) {
                 case "java.lang.Integer":
                 case "int":
                     statement = "getInt(%d, -1)";
@@ -172,15 +176,15 @@ class Barbershop {
                     statement = "getColorStateList(%d)";
                     break;
                 default:
-                    throw new IllegalArgumentException(String.format("Invalid type %s for id %d", binding.type, binding.id));
+                    throw new IllegalArgumentException(String.format("Invalid type %s for id %d", styleableBinding.type, styleableBinding.id));
             }
         } else {
-            switch (binding.kind) {
+            switch (styleableBinding.kind) {
                 case COLOR:
                     statement = "getColor(%d, -1)";
                     break;
                 case FRACTION:
-                    statement = "getFraction(%d, " + binding.fractBase + ", " + binding.fractPBase + ", -1f)";
+                    statement = "getFraction(%d, " + styleableBinding.fractBase + ", " + styleableBinding.fractPBase + ", -1f)";
                     break;
                 case INTEGER:
                     statement = "getInteger(%d, -1)";
@@ -201,62 +205,83 @@ class Barbershop {
                     statement = "getNonResourceString(%d)";
                     break;
                 default:
-                    throw new IllegalArgumentException(String.format("Invalid attrType %s for id %d", binding.kind.name(), binding.id));
+                    throw new IllegalArgumentException(String.format("Invalid attrType %s for id %d", styleableBinding.kind.name(), styleableBinding.id));
             }
         }
 
 
-        return String.format(statement, binding.id);
+        return String.format(statement, styleableBinding.id);
     }
 
-    public void createAndAddBinding(Element element) {
-        String name;
-        String type;
-        if (element.getKind() == ElementKind.FIELD) {
-            name = element.getSimpleName().toString();
-            type = element.asType().toString();
-        } else {
-            ExecutableElement executableElement = (ExecutableElement) element;
-            name = executableElement.getSimpleName().toString();
-            type = executableElement.getParameters().get(0).asType().toString();
-        }
+    public void createAndAddStyleableBinding(Element element) {
         int id = element.getAnnotation(StyledAttr.class).value();
-        if (styleableBindings.containsKey(id)) {
-            throw new IllegalStateException(String.format("Duplicate ID assigned for field %s and %s", name, styleableBindings.get(id).name));
-        }
-
         StyledAttr instance = element.getAnnotation(StyledAttr.class);
-        Binding binding = new Binding(name, type, id, instance.kind());
-        binding.isRequired = element.getAnnotation(Required.class) != null;
-        if (element.getKind() == ElementKind.METHOD) {
-            binding.isMethod = true;
-        }
-        if (binding.kind == FRACTION) {
-            binding.fractBase = instance.base();
-            binding.fractPBase = instance.pbase();
+        StyleableBinding styleableBinding = new StyleableBinding(element, id, instance.kind());
+        if (styleableBindings.containsKey(id)) {
+            throw new IllegalStateException(String.format("Duplicate ID assigned for field %s and %s", styleableBinding.name, styleableBindings.get(id).name));
         }
 
-        styleableBindings.put(id, binding);
+        if (styleableBinding.kind == FRACTION) {
+            styleableBinding.fractBase = instance.base();
+            styleableBinding.fractPBase = instance.pbase();
+        }
+
+        styleableBindings.put(id, styleableBinding);
     }
 
-    public static class Binding {
+    public void createAndAddAndroidAttrBinding(Element element) {
+        String attr = element.getAnnotation(AndroidAttr.class).value();
+        AndroidAttrBinding androidAttrBinding = new AndroidAttrBinding(element, attr);
+        if (androidAttrBindings.containsKey(attr)) {
+            throw new IllegalStateException(String.format("Duplicate attr assigned for field %s and %s", androidAttrBinding.name, androidAttrBindings.get(attr).name));
+        }
 
-        private final String name;
-        private final String type;
-        private int id;
-        private Kind kind;
-        private boolean isMethod;
-        private boolean isRequired;
+        androidAttrBindings.put(attr, androidAttrBinding);
+    }
+
+    private abstract static class Binding {
+        final String name;
+        final String type;
+        final boolean isMethod;
+        final boolean isRequired;
+
+        public Binding(Element element) {
+            if (element.getKind() == ElementKind.FIELD) {
+                name = element.getSimpleName().toString();
+                type = element.asType().toString();
+            } else {
+                ExecutableElement executableElement = (ExecutableElement) element;
+                name = executableElement.getSimpleName().toString();
+                type = executableElement.getParameters().get(0).asType().toString();
+            }
+
+            isRequired = element.getAnnotation(Required.class) != null;
+            isMethod = element.getKind() == ElementKind.METHOD;
+        }
+    }
+
+    private static class StyleableBinding extends Binding {
+
+        final int id;
+        final Kind kind;
 
         // Fractions
-        private int fractBase;
-        private int fractPBase;
+        int fractBase;
+        int fractPBase;
 
-        public Binding(String name, String type, int id, Kind kind) {
-            this.name = name;
-            this.type = type;
+        StyleableBinding(Element element, int id, Kind kind) {
+            super(element);
             this.id = id;
             this.kind = kind;
+        }
+    }
+
+    private static class AndroidAttrBinding extends Binding {
+        final String attrName;
+
+        AndroidAttrBinding(Element element, String attrName) {
+            super(element);
+            this.attrName = attrName;
         }
     }
 }

@@ -8,6 +8,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 
+import io.sweers.barber.AndroidAttr;
 import io.sweers.barber.Barber;
 import io.sweers.barber.Kind;
 import io.sweers.barber.StyledAttr;
@@ -79,8 +80,10 @@ public class TestView extends View {
     @StyledAttr(value = R.styleable.TestView_testNonResString2, kind = Kind.NON_RES_STRING)
     public String testNonResString2;
 
-    public float testFloat;
+    @AndroidAttr("textAllCaps")
+    public boolean textAllCaps = false;
 
+    public float testFloat;
 
     public TestView(Context context) {
         super(context);

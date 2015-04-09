@@ -40,6 +40,7 @@ public class BarberProcessor extends AbstractProcessor {
         return new HashSet<String>() {{
             add(StyledAttr.class.getCanonicalName());
             add(Required.class.getCanonicalName());
+            add(AndroidAttr.class.getCanonicalName());
         }};
     }
 
@@ -71,7 +72,21 @@ public class BarberProcessor extends AbstractProcessor {
                 }
                 TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
                 Barbershop barbershop = getOrCreateBarber(targetClassMap, enclosingElement, erasedTargetNames);
-                barbershop.createAndAddBinding(element);
+                barbershop.createAndAddStyleableBinding(element);
+            } catch (Exception e) {
+                error(element, "%s", e.getMessage());
+            }
+        }
+
+        for (Element element : roundEnv.getElementsAnnotatedWith(AndroidAttr.class)) {
+            try {
+                if (element.getKind() != ElementKind.FIELD && element.getKind() != ElementKind.METHOD) {
+                    error(element, "AndroidAttr annotations can only be applied to fields or methods!");
+                    return false;
+                }
+                TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
+                Barbershop barbershop = getOrCreateBarber(targetClassMap, enclosingElement, erasedTargetNames);
+                barbershop.createAndAddAndroidAttrBinding(element);
             } catch (Exception e) {
                 error(element, "%s", e.getMessage());
             }
