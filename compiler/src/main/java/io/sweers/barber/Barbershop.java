@@ -33,14 +33,14 @@ class Barbershop {
     private final String classPackage;
     private final String className;
     private final String targetClass;
-    private final Map<Integer, FieldBinding> fieldBindings;
+    private final Map<Integer, Binding> styleableBindings;
     private String parentBarbershop;
 
     Barbershop(String classPackage, String className, String targetClass) {
         this.classPackage = classPackage;
         this.className = className;
         this.targetClass = targetClass;
-        this.fieldBindings = new HashMap<>();
+        this.styleableBindings = new HashMap<>();
     }
 
     void setParentBarbershop(String parentBarbershop) {
@@ -105,7 +105,7 @@ class Barbershop {
                 // Proceed with obtaining the TypedArray if we got here
                 .addStatement("$T a = target.getContext().obtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes)", TypedArray.class);
 
-        for (FieldBinding binding : fieldBindings.values()) {
+        for (Binding binding : styleableBindings.values()) {
             // Wrap the styling with if-statement to check if there's a value first, this way we can
             // keep existing default values if there isn't one and don't overwrite them.
             // TODO Remove this if possible to let user specify default values, but I haven't found a way yet.
@@ -142,7 +142,7 @@ class Barbershop {
         return builder.build();
     }
 
-    private String getFormattedStatementForBinding(FieldBinding binding) {
+    private String getFormattedStatementForBinding(Binding binding) {
         String statement;
         if (binding.kind == STANDARD) {
             switch (binding.type) {
@@ -210,7 +210,6 @@ class Barbershop {
     }
 
     public void createAndAddBinding(Element element) {
-        int id = element.getAnnotation(StyledAttr.class).value();
         String name;
         String type;
         if (element.getKind() == ElementKind.FIELD) {
@@ -221,12 +220,13 @@ class Barbershop {
             name = executableElement.getSimpleName().toString();
             type = executableElement.getParameters().get(0).asType().toString();
         }
-        if (fieldBindings.containsKey(id)) {
-            throw new IllegalStateException(String.format("Duplicate ID assigned for field %s and %s", name, fieldBindings.get(id).name));
+        int id = element.getAnnotation(StyledAttr.class).value();
+        if (styleableBindings.containsKey(id)) {
+            throw new IllegalStateException(String.format("Duplicate ID assigned for field %s and %s", name, styleableBindings.get(id).name));
         }
 
         StyledAttr instance = element.getAnnotation(StyledAttr.class);
-        FieldBinding binding = new FieldBinding(name, type, id, instance.kind());
+        Binding binding = new Binding(name, type, id, instance.kind());
         binding.isRequired = element.getAnnotation(Required.class) != null;
         if (element.getKind() == ElementKind.METHOD) {
             binding.isMethod = true;
@@ -236,10 +236,10 @@ class Barbershop {
             binding.fractPBase = instance.pbase();
         }
 
-        fieldBindings.put(id, binding);
+        styleableBindings.put(id, binding);
     }
 
-    public static class FieldBinding {
+    public static class Binding {
 
         private final String name;
         private final String type;
@@ -252,7 +252,7 @@ class Barbershop {
         private int fractBase;
         private int fractPBase;
 
-        public FieldBinding(String name, String type, int id, Kind kind) {
+        public Binding(String name, String type, int id, Kind kind) {
             this.name = name;
             this.type = type;
             this.id = id;
