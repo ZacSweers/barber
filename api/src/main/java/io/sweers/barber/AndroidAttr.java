@@ -15,4 +15,7 @@ import java.lang.annotation.Target;
 public @interface AndroidAttr {
     // An android attribute name (e.g. "textAllCaps")
     String value();
+
+    // Namespace value. Default is the usual android namespace, but can use alternatives (e.g. tools)
+    String namespace() default "http://schemas.android.com/apk/res/android";
 }

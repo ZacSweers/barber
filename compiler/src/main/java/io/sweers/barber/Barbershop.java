@@ -30,8 +30,6 @@ import static io.sweers.barber.Kind.STANDARD;
  */
 class Barbershop {
 
-    private static final String ANDROID_ATTR_NAMESPACE = "http://schemas.android.com/apk/res/android";
-
     private final String classPackage;
     private final String className;
     private final String targetClass;
@@ -116,9 +114,9 @@ class Barbershop {
             builder.beginControlFlow("if (a.hasValue($L))", binding.id);
             if (binding.isMethod) {
                 // Call the method directly
-                builder.addStatement("target.$L(a.$L)", binding.name, getFormattedStatementForBinding(binding));
+                builder.addStatement("target.$L(a.$L)", binding.name, getFormattedStatementForStyleableBinding(binding));
             } else {
-                builder.addStatement("target.$L = a.$L", binding.name, getFormattedStatementForBinding(binding));
+                builder.addStatement("target.$L = a.$L", binding.name, getFormattedStatementForStyleableBinding(binding));
             }
             if (binding.isRequired) {
                 builder.nextControlFlow("else")
@@ -128,6 +126,15 @@ class Barbershop {
         }
 
         builder.addStatement("a.recycle()");
+
+        for (AndroidAttrBinding binding : androidAttrBindings.values()) {
+            if (binding.isMethod) {
+                // Call the method directly
+                builder.addStatement("target.$L(set.getAttributeValue($S, $S))", binding.name, binding.namespace, binding.attrName);
+            } else {
+                builder.addStatement("target.$L = set.getAttributeValue($S, $S)", binding.name, binding.namespace, binding.attrName);
+            }
+        }
 
         return builder.build();
     }
@@ -146,7 +153,7 @@ class Barbershop {
         return builder.build();
     }
 
-    private String getFormattedStatementForBinding(StyleableBinding styleableBinding) {
+    private String getFormattedStatementForStyleableBinding(StyleableBinding styleableBinding) {
         String statement;
         if (styleableBinding.kind == STANDARD) {
             switch (styleableBinding.type) {
@@ -214,8 +221,8 @@ class Barbershop {
     }
 
     public void createAndAddStyleableBinding(Element element) {
-        int id = element.getAnnotation(StyledAttr.class).value();
         StyledAttr instance = element.getAnnotation(StyledAttr.class);
+        int id = instance.value();
         StyleableBinding styleableBinding = new StyleableBinding(element, id, instance.kind());
         if (styleableBindings.containsKey(id)) {
             throw new IllegalStateException(String.format("Duplicate ID assigned for field %s and %s", styleableBinding.name, styleableBindings.get(id).name));
@@ -230,8 +237,10 @@ class Barbershop {
     }
 
     public void createAndAddAndroidAttrBinding(Element element) {
-        String attr = element.getAnnotation(AndroidAttr.class).value();
-        AndroidAttrBinding androidAttrBinding = new AndroidAttrBinding(element, attr);
+        AndroidAttr instance = element.getAnnotation(AndroidAttr.class);
+        String attr = instance.value();
+        String namespace = instance.namespace();
+        AndroidAttrBinding androidAttrBinding = new AndroidAttrBinding(element, attr, namespace);
         if (androidAttrBindings.containsKey(attr)) {
             throw new IllegalStateException(String.format("Duplicate attr assigned for field %s and %s", androidAttrBinding.name, androidAttrBindings.get(attr).name));
         }
@@ -278,10 +287,12 @@ class Barbershop {
 
     private static class AndroidAttrBinding extends Binding {
         final String attrName;
+        final String namespace;
 
-        AndroidAttrBinding(Element element, String attrName) {
+        AndroidAttrBinding(Element element, String attrName, String namespace) {
             super(element);
             this.attrName = attrName;
+            this.namespace = namespace;
         }
     }
 }

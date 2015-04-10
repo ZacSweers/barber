@@ -80,8 +80,8 @@ public class TestView extends View {
     @StyledAttr(value = R.styleable.TestView_testNonResString2, kind = Kind.NON_RES_STRING)
     public String testNonResString2;
 
-    @AndroidAttr("textAllCaps")
-    public boolean textAllCaps = false;
+    @AndroidAttr("layout_height")
+    public String layoutHeight = "false";
 
     public float testFloat;
 

@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.Arrays;
 
@@ -139,5 +140,10 @@ public class BarberTest extends AndroidTestCase {
         } catch (IllegalStateException e) {
             assertEquals("\"Missing required attribute \'requiredString\' while styling \'io.sweers.barber.sample.testing.RequiredTestView\'\"", e.getMessage());
         }
+    }
+
+    @SmallTest
+    public void testAndroidAttr() {
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, Integer.parseInt(testView.layoutHeight));
     }
 }
