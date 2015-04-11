@@ -3,6 +3,7 @@ package io.sweers.barber.sample;
 import android.content.res.Resources;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
+import android.view.InflateException;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -136,14 +137,21 @@ public class BarberTest extends AndroidTestCase {
     @SmallTest
     public void testRequired() {
         try {
-            View.inflate(getContext(), R.layout.test_view, null);
-        } catch (IllegalStateException e) {
-            assertEquals("\"Missing required attribute \'requiredString\' while styling \'io.sweers.barber.sample.testing.RequiredTestView\'\"", e.getMessage());
+            View.inflate(getContext(), R.layout.required_test_view, null);
+            fail("Expected missing required attribute exception");
+        } catch (InflateException e) {
+            // Success
         }
     }
 
     @SmallTest
     public void testAndroidAttr() {
-        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, Integer.parseInt(testView.layoutHeight));
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, testTextView.layoutHeight);
+        assertTrue(testTextView.textAllCaps);
+        assertEquals("0x1", testTextView.textStyle);
+        assertEquals(R.color.material_blue_grey_800, testTextView.textColor);
+        assertEquals(Color.parseColor("#40ffffff"), testTextView.hintColor);
+        assertEquals(3, testTextView.maxLines);
+        assertEquals(1.2f, testTextView.lineSpacingMultiplier);
     }
 }
