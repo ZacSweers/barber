@@ -8,7 +8,6 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 
-import io.sweers.barber.AndroidAttr;
 import io.sweers.barber.Barber;
 import io.sweers.barber.Kind;
 import io.sweers.barber.StyledAttr;
@@ -79,9 +78,6 @@ public class TestView extends View {
 
     @StyledAttr(value = R.styleable.TestView_testNonResString2, kind = Kind.NON_RES_STRING)
     public String testNonResString2;
-
-    @AndroidAttr("layout_height")
-    public String layoutHeight = "false";
 
     public float testFloat;
 
