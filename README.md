@@ -109,7 +109,7 @@ public float testFractionBase;
 
 See the [Kind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/java/io/sweers/barber/Kind.java) for a full list of supported types.
 
-#### StyledAttr
+#### AndroidAttr
 
 If you want to retrieve the value of an Android attribute, you can use `@AndroidAttr` to retrieve its value
 
