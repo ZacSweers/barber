@@ -11,12 +11,14 @@ Barber is your personal custom view stylist.
 
 This library is heavily influenced by Jake Wharton's [Butterknife](https://github.com/JakeWharton/butterknife) library, and was actually [suggested to me](http://www.reddit.com/r/androiddev/comments/2ue4rm/i_want_to_learn_annotation_processing_but_cant/co7n093?context=3) by the man himself.
 
-Barber has two annotations that you use: `@StyledAttr` and `@AndroidAttr`. These can be used on either fields (if you want to keep the value) or methods (specifically, setters). `StyledAttr` is used for retrieving custom attrs for custom views. `@AndroidAttr` is used for retrieving values for attributes in the android namespace.
-
-The Barber class has 3 overloaded `style()` methods, so you can call the appropriate one from whichever constructor you prefer. Note that annotated fields or methods cannot be private, and must at least be package accessible. This is because Barber will generate a `**$$Barbershop` class in the same package as the target class.
-
 Usage
 -----
+
+Barber has two main annotations that you use: `@StyledAttr` and `@AndroidAttr`. These can be used on fields or methods (e.g. setters). `StyledAttr` is used for retrieving custom attrs for custom views. `@AndroidAttr` is used for retrieving values for attributes in the android namespace.
+
+The Barber class has 3 overloaded `style()` methods, so you can call the appropriate one from whichever constructor you prefer.
+
+Annotated fields or methods *cannot* be private, and must at least be package accessible. This is because Barber will generate a `**$$Barbershop` class in the same package as the target class.
 
 #### StyledAttr
 
