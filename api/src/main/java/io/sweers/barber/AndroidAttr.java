@@ -18,4 +18,8 @@ public @interface AndroidAttr {
 
     // Namespace value. Default is the usual android namespace, but can use alternatives (e.g. tools)
     String namespace() default "http://schemas.android.com/apk/res/android";
+
+    // Kind of the injection. Use this to specify if the return type is a special case,
+    // such as unsigned ints or resource ints
+    AttrSetKind kind() default AttrSetKind.STANDARD;
 }
