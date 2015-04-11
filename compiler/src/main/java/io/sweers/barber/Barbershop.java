@@ -159,31 +159,21 @@ class Barbershop {
     }
 
     public void createAndAddStyleableBinding(Element element) {
-        StyledAttr instance = element.getAnnotation(StyledAttr.class);
-        int id = instance.value();
-        StyleableBinding styleableBinding = new StyleableBinding(element, id, instance.kind());
-        if (styleableBindings.containsKey(id)) {
-            throw new IllegalStateException(String.format("Duplicate ID assigned for field %s and %s", styleableBinding.name, styleableBindings.get(id).name));
+        StyleableBinding binding = new StyleableBinding(element);
+        if (styleableBindings.containsKey(binding.id)) {
+            throw new IllegalStateException(String.format("Duplicate ID assigned for field %s and %s", binding.name, styleableBindings.get(binding.id).name));
+        } else {
+            styleableBindings.put(binding.id, binding);
         }
-
-        if (styleableBinding.kind == FRACTION) {
-            styleableBinding.fractBase = instance.base();
-            styleableBinding.fractPBase = instance.pbase();
-        }
-
-        styleableBindings.put(id, styleableBinding);
     }
 
     public void createAndAddAndroidAttrBinding(Element element) {
-        AndroidAttr instance = element.getAnnotation(AndroidAttr.class);
-        String attr = instance.value();
-        AttrSetKind kind = instance.kind();
-        AndroidAttrBinding androidAttrBinding = new AndroidAttrBinding(element, attr, kind);
-        if (androidAttrBindings.containsKey(attr)) {
-            throw new IllegalStateException(String.format("Duplicate attr assigned for field %s and %s", androidAttrBinding.name, androidAttrBindings.get(attr).name));
+        AndroidAttrBinding binding = new AndroidAttrBinding(element);
+        if (androidAttrBindings.containsKey(binding.attrName)) {
+            throw new IllegalStateException(String.format("Duplicate attr assigned for field %s and %s", binding.name, androidAttrBindings.get(binding.attrName).name));
+        } else {
+            androidAttrBindings.put(binding.attrName, binding);
         }
-
-        androidAttrBindings.put(attr, androidAttrBinding);
     }
 
     private abstract static class Binding {
@@ -218,10 +208,15 @@ class Barbershop {
         int fractBase;
         int fractPBase;
 
-        StyleableBinding(Element element, int id, Kind kind) {
+        StyleableBinding(Element element) {
             super(element);
-            this.id = id;
-            this.kind = kind;
+            StyledAttr instance = element.getAnnotation(StyledAttr.class);
+            this.id = instance.value();
+            this.kind = instance.kind();
+            if (kind == FRACTION) {
+                fractBase = instance.base();
+                fractPBase = instance.pbase();
+            }
         }
 
         @Override
@@ -296,12 +291,13 @@ class Barbershop {
 
     private static class AndroidAttrBinding extends Binding {
         final String attrName;
-        private AttrSetKind kind;
+        final AttrSetKind kind;
 
-        AndroidAttrBinding(Element element, String attrName, AttrSetKind kind) {
+        AndroidAttrBinding(Element element) {
             super(element);
-            this.attrName = attrName;
-            this.kind = kind;
+            AndroidAttr instance = element.getAnnotation(AndroidAttr.class);
+            this.attrName = instance.value();
+            this.kind = instance.kind();
         }
 
         @Override
