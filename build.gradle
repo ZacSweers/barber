@@ -10,14 +10,16 @@ buildscript {
 }
 
 ext {
-    Properties props = new Properties()
-    props.load(new FileInputStream(file("private.props")))
+    if (file("private.props").exists()) {
+        Properties props = new Properties()
+        props.load(new FileInputStream(file("private.props")))
+        BINTRAY_KEY = props.getProperty('BINTRAY_KEY')
+        VERSION_NAME = props.getProperty('VERSION_NAME')
+        VERSION_CODE = props.getProperty('VERSION_CODE').toInteger()
+    }
     SITE_URL = 'https://github.com/hzsweers/barber'
     GIT_URL = 'https://github.com/hzsweers/barber.git'
     BINTRAY_USER = 'pandanomic'
-    BINTRAY_KEY = props.getProperty('BINTRAY_KEY')
-    VERSION_NAME = props.getProperty('VERSION_NAME')
-    VERSION_CODE = props.getProperty('VERSION_CODE').toInteger()
     GROUP_NAME = 'io.sweers.barber'
     COMPILE_SDK = 22
     BUILD_TOOLS = '22.0.0'
