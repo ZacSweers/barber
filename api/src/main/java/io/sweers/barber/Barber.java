@@ -84,6 +84,6 @@ public class Barber {
 
     /** DO NOT USE. Exposed for generated classes' use. */
     public interface IBarbershop<T> {
-        public void style(final T target, final AttributeSet set, final int[] attrs, final int defStyleAttr, final int defStyleRes);
+        void style(final T target, final AttributeSet set, final int[] attrs, final int defStyleAttr, final int defStyleRes);
     }
 }
