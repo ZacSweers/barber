@@ -118,7 +118,14 @@ If you want to retrieve the value of an Android attribute, you can use `@Android
 public boolean textAllCaps;
 ```
 
-These are subject to the same rules as `@StyledAttr` regarding special return types. See the [AttrSetKind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/java/io/sweers/barber/AttrSetKind.java) for a full list of supported types. Right now it's just limited to the API of `AttributeSet`, but I may look into adding a more flexible API layer on top of this for massaging the returned data if people express an interest.
+Like `StyledAttr`, the default behavior is to return the type of the field/param. These are also subject to the same approach as `@StyledAttr` regarding special return types. See the [AttrSetKind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/java/io/sweers/barber/AttrSetKind.java) for a full list of supported types.
+
+```java
+@AndroidAttr(value = "textColor", kind = AttrSetKind.RESOURCE)
+public int textColor;
+```
+
+Right now it's just limited to the API of `AttributeSet`, but I may look into adding a more flexible API layer on top of this for massaging the returned data if people express an interest.
 
 Required attributes
 -------------------
