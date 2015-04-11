@@ -1,0 +1,41 @@
+language: android
+
+env:
+  matrix:
+    - ANDROID_SDKS=android-22,sysimg-22  ANDROID_TARGET=android-22  ANDROID_ABI=armeabi-v7a
+
+jdk:
+ - oraclejdk7
+ - oraclejdk8
+
+android:
+  components:
+    - build-tools-22.0.1
+    - android-22
+    - sys-img-armeabi-v7a-android-22
+
+before_install:
+  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+  - emulator -avd test -no-skin -no-audio -no-window &
+
+# Emulator Management: Create, Start and Wait
+before_script:
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
+
+script:
+  - ./gradlew clean :sample:installDebug
+  - adb shell am instrument -w io.sweers.barber.sample.test/android.test.InstrumentationTestRunner
+
+branches:
+  except:
+    - gh-pages
+
+notifications:
+  email: false
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.gradle
