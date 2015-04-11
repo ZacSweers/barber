@@ -84,6 +84,7 @@ public class Barber {
 
     /** DO NOT USE. Exposed for generated classes' use. */
     public interface IBarbershop<T> {
+        String ANDROID_ATTR_NAMESPACE = "http://schemas.android.com/apk/res/android";
         void style(final T target, final AttributeSet set, final int[] attrs, final int defStyleAttr, final int defStyleRes);
     }
 }

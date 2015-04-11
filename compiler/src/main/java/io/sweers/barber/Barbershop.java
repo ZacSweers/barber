@@ -30,8 +30,6 @@ import static io.sweers.barber.Kind.STANDARD;
  */
 class Barbershop {
 
-    private static final String ANDROID_ATTR_NAMESPACE = "http://schemas.android.com/apk/res/android";
-
     private final String classPackage;
     private final String className;
     private final String targetClass;
@@ -309,19 +307,19 @@ class Barbershop {
                 switch (type) {
                     case "java.lang.Integer":
                     case "int":
-                        statement = "getAttributeIntValue(\"%s\", \"%s\", -1)";
+                        statement = "getAttributeIntValue(%s, %s, -1)";
                         break;
                     case "java.lang.Boolean":
                     case "boolean":
-                        statement = "getAttributeBooleanValue(\"%s\", \"%s\", false)";
+                        statement = "getAttributeBooleanValue(%s, %s, false)";
                         break;
                     case "java.lang.Float":
                     case "float":
-                        statement = "getAttributeFloatValue(\"%s\", \"%s\", -1f)";
+                        statement = "getAttributeFloatValue(%s, %s, -1f)";
                         break;
                     case "java.lang.CharSequence":
                     case "java.lang.String":
-                        statement = "getAttributeValue(\"%s\", \"%s\")";
+                        statement = "getAttributeValue(%s, %s)";
                         break;
                     default:
                         throw new IllegalArgumentException(String.format("Invalid type \"%s\" for id \"%s\"", type, attrName));
@@ -329,17 +327,17 @@ class Barbershop {
             } else {
                 switch (kind) {
                     case U_INT:
-                        statement = "getAttributeUnsignedIntValue(\"%s\", \"%s\", -1)";
+                        statement = "getAttributeUnsignedIntValue(%s, %s, -1)";
                         break;
                     case RESOURCE:
-                        statement = "getAttributeResourceValue(\"%s\", \"%s\", -1)";
+                        statement = "getAttributeResourceValue(%s, %s, -1)";
                         break;
                     default:
                         throw new IllegalArgumentException(String.format("Invalid type \"%s\" for id \"%s\"", kind.name(), attrName));
                 }
             }
 
-            return String.format(statement, ANDROID_ATTR_NAMESPACE, attrName);
+            return String.format(statement, "ANDROID_ATTR_NAMESPACE", "\"" + attrName + "\"");
         }
     }
 }
