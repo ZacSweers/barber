@@ -102,10 +102,12 @@ class Barbershop {
         // Don't do anything if there's no AttributeSet instance
         builder.beginControlFlow("if (set == null)")
                 .addStatement("return")
-                .endControlFlow()
+                .endControlFlow();
 
-                // Proceed with obtaining the TypedArray if we got here
-                .addStatement("$T a = target.getContext().obtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes)", TypedArray.class);
+        builder.beginControlFlow("if (attrs != null)");
+        // Proceed with obtaining the TypedArray if we got here
+        builder.addStatement("$T a = target.getContext().obtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes)", TypedArray.class);
+
 
         for (StyleableBinding binding : styleableBindings.values()) {
             // Wrap the styling with if-statement to check if there's a value first, this way we can
@@ -114,9 +116,9 @@ class Barbershop {
             builder.beginControlFlow("if (a.hasValue($L))", binding.id);
             if (binding.isMethod) {
                 // Call the method directly
-                builder.addStatement("target.$L(a.$L)", binding.name, getFormattedStatementForStyleableBinding(binding));
+                builder.addStatement("target.$L(a.$L)", binding.name, binding.getFormattedStatement());
             } else {
-                builder.addStatement("target.$L = a.$L", binding.name, getFormattedStatementForStyleableBinding(binding));
+                builder.addStatement("target.$L = a.$L", binding.name, binding.getFormattedStatement());
             }
             if (binding.isRequired) {
                 builder.nextControlFlow("else")
@@ -126,13 +128,14 @@ class Barbershop {
         }
 
         builder.addStatement("a.recycle()");
+        builder.endControlFlow();
 
         for (AndroidAttrBinding binding : androidAttrBindings.values()) {
             if (binding.isMethod) {
                 // Call the method directly
-                builder.addStatement("target.$L(set.getAttributeValue($S, $S))", binding.name, binding.namespace, binding.attrName);
+                builder.addStatement("target.$L(set.$L)", binding.name, binding.getFormattedStatement());
             } else {
-                builder.addStatement("target.$L = set.getAttributeValue($S, $S)", binding.name, binding.namespace, binding.attrName);
+                builder.addStatement("target.$L = set.$L", binding.name, binding.getFormattedStatement());
             }
         }
 
@@ -151,73 +154,6 @@ class Barbershop {
         }
 
         return builder.build();
-    }
-
-    private String getFormattedStatementForStyleableBinding(StyleableBinding styleableBinding) {
-        String statement;
-        if (styleableBinding.kind == STANDARD) {
-            switch (styleableBinding.type) {
-                case "java.lang.Integer":
-                case "int":
-                    statement = "getInt(%d, -1)";
-                    break;
-                case "boolean":
-                    statement = "getBoolean(%d, false)";
-                    break;
-                case "float":
-                    statement = "getFloat(%d, -1f)";
-                    break;
-                case "java.lang.String":
-                    statement = "getString(%d)";
-                    break;
-                case "java.lang.CharSequence":
-                    statement = "getText(%d)";
-                    break;
-                case "android.graphics.drawable.Drawable":
-                    statement = "getDrawable(%d)";
-                    break;
-                case "java.lang.CharSequence[]":
-                    statement = "getTextArray(%d)";
-                    break;
-                case "android.content.res.ColorStateList":
-                    statement = "getColorStateList(%d)";
-                    break;
-                default:
-                    throw new IllegalArgumentException(String.format("Invalid type %s for id %d", styleableBinding.type, styleableBinding.id));
-            }
-        } else {
-            switch (styleableBinding.kind) {
-                case COLOR:
-                    statement = "getColor(%d, -1)";
-                    break;
-                case FRACTION:
-                    statement = "getFraction(%d, " + styleableBinding.fractBase + ", " + styleableBinding.fractPBase + ", -1f)";
-                    break;
-                case INTEGER:
-                    statement = "getInteger(%d, -1)";
-                    break;
-                case DIMEN:
-                    statement = "getDimension(%d, -1f)";
-                    break;
-                case DIMEN_PIXEL_SIZE:
-                    statement = "getDimensionPixelSize(%d, -1)";
-                    break;
-                case DIMEN_PIXEL_OFFSET:
-                    statement = "getDimensionPixelOffset(%d, -1)";
-                    break;
-                case RES_ID:
-                    statement = "getResourceId(%d, -1)";
-                    break;
-                case NON_RES_STRING:
-                    statement = "getNonResourceString(%d)";
-                    break;
-                default:
-                    throw new IllegalArgumentException(String.format("Invalid attrType %s for id %d", styleableBinding.kind.name(), styleableBinding.id));
-            }
-        }
-
-
-        return String.format(statement, styleableBinding.id);
     }
 
     public void createAndAddStyleableBinding(Element element) {
@@ -240,7 +176,8 @@ class Barbershop {
         AndroidAttr instance = element.getAnnotation(AndroidAttr.class);
         String attr = instance.value();
         String namespace = instance.namespace();
-        AndroidAttrBinding androidAttrBinding = new AndroidAttrBinding(element, attr, namespace);
+        AttrSetKind kind = instance.kind();
+        AndroidAttrBinding androidAttrBinding = new AndroidAttrBinding(element, attr, namespace, kind);
         if (androidAttrBindings.containsKey(attr)) {
             throw new IllegalStateException(String.format("Duplicate attr assigned for field %s and %s", androidAttrBinding.name, androidAttrBindings.get(attr).name));
         }
@@ -267,6 +204,8 @@ class Barbershop {
             isRequired = element.getAnnotation(Required.class) != null;
             isMethod = element.getKind() == ElementKind.METHOD;
         }
+
+        public abstract String getFormattedStatement();
     }
 
     private static class StyleableBinding extends Binding {
@@ -283,16 +222,127 @@ class Barbershop {
             this.id = id;
             this.kind = kind;
         }
+
+        @Override
+        public String getFormattedStatement() {
+            String statement;
+            if (kind == STANDARD) {
+                switch (type) {
+                    case "java.lang.Integer":
+                    case "int":
+                        statement = "getInt(%d, -1)";
+                        break;
+                    case "java.lang.Boolean":
+                    case "boolean":
+                        statement = "getBoolean(%d, false)";
+                        break;
+                    case "java.lang.Float":
+                    case "float":
+                        statement = "getFloat(%d, -1f)";
+                        break;
+                    case "java.lang.String":
+                        statement = "getString(%d)";
+                        break;
+                    case "java.lang.CharSequence":
+                        statement = "getText(%d)";
+                        break;
+                    case "android.graphics.drawable.Drawable":
+                        statement = "getDrawable(%d)";
+                        break;
+                    case "java.lang.CharSequence[]":
+                        statement = "getTextArray(%d)";
+                        break;
+                    case "android.content.res.ColorStateList":
+                        statement = "getColorStateList(%d)";
+                        break;
+                    default:
+                        throw new IllegalArgumentException(String.format("Invalid type %s for id %d", type, id));
+                }
+            } else {
+                switch (kind) {
+                    case COLOR:
+                        statement = "getColor(%d, -1)";
+                        break;
+                    case FRACTION:
+                        statement = "getFraction(%d, " + fractBase + ", " + fractPBase + ", -1f)";
+                        break;
+                    case INTEGER:
+                        statement = "getInteger(%d, -1)";
+                        break;
+                    case DIMEN:
+                        statement = "getDimension(%d, -1f)";
+                        break;
+                    case DIMEN_PIXEL_SIZE:
+                        statement = "getDimensionPixelSize(%d, -1)";
+                        break;
+                    case DIMEN_PIXEL_OFFSET:
+                        statement = "getDimensionPixelOffset(%d, -1)";
+                        break;
+                    case RES_ID:
+                        statement = "getResourceId(%d, -1)";
+                        break;
+                    case NON_RES_STRING:
+                        statement = "getNonResourceString(%d)";
+                        break;
+                    default:
+                        throw new IllegalArgumentException(String.format("Invalid attrType %s for id %d", kind.name(), id));
+                }
+            }
+
+            return String.format(statement, id);
+        }
     }
 
     private static class AndroidAttrBinding extends Binding {
         final String attrName;
         final String namespace;
+        private AttrSetKind kind;
 
-        AndroidAttrBinding(Element element, String attrName, String namespace) {
+        AndroidAttrBinding(Element element, String attrName, String namespace, AttrSetKind kind) {
             super(element);
             this.attrName = attrName;
             this.namespace = namespace;
+            this.kind = kind;
+        }
+
+        @Override
+        public String getFormattedStatement() {
+            String statement;
+            if (kind == AttrSetKind.STANDARD) {
+                switch (type) {
+                    case "java.lang.Integer":
+                    case "int":
+                        statement = "getAttributeIntValue(\"%s\", \"%s\", -1)";
+                        break;
+                    case "java.lang.Boolean":
+                    case "boolean":
+                        statement = "getAttributeBooleanValue(\"%s\", \"%s\", false)";
+                        break;
+                    case "java.lang.Float":
+                    case "float":
+                        statement = "getAttributeFloatValue(\"%s\", \"%s\", -1f)";
+                        break;
+                    case "java.lang.CharSequence":
+                    case "java.lang.String":
+                        statement = "getAttributeValue(\"%s\", \"%s\")";
+                        break;
+                    default:
+                        throw new IllegalArgumentException(String.format("Invalid type \"%s\" for id \"%s\"", type, attrName));
+                }
+            } else {
+                switch (kind) {
+                    case U_INT:
+                        statement = "getAttributeUnsignedIntValue(\"%s\", \"%s\", -1)";
+                        break;
+                    case RESOURCE:
+                        statement = "getAttributeResourceValue(\"%s\", \"%s\", -1)";
+                        break;
+                    default:
+                        throw new IllegalArgumentException(String.format("Invalid type \"%s\" for id \"%s\"", kind.name(), attrName));
+                }
+            }
+
+            return String.format(statement, namespace, attrName);
         }
     }
 }
