@@ -198,6 +198,7 @@ class Barbershop {
             isMethod = element.getKind() == ElementKind.METHOD;
         }
 
+        @SuppressWarnings("unused")
         public abstract String getFormattedStatement();
     }
 
