@@ -106,38 +106,40 @@ class Barbershop {
                 .addStatement("return")
                 .endControlFlow();
 
-        builder.beginControlFlow("if (attrs != null)");
-        // Proceed with obtaining the TypedArray if we got here
-        builder.addStatement("$T a = target.getContext().obtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes)", TypedArray.class);
+        if (!styleableBindings.isEmpty()) {
+            // Proceed with obtaining the TypedArray if we got here
+            builder.addStatement("$T a = target.getContext().obtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes)", TypedArray.class);
 
 
-        for (StyleableBinding binding : styleableBindings.values()) {
-            // Wrap the styling with if-statement to check if there's a value first, this way we can
-            // keep existing default values if there isn't one and don't overwrite them.
-            // TODO Remove this if possible to let user specify default values, but I haven't found a way yet.
-            builder.beginControlFlow("if (a.hasValue($L))", binding.id);
-            if (binding.isMethod) {
-                // Call the method directly
-                builder.addStatement("target.$L(a.$L)", binding.name, binding.getFormattedStatement());
-            } else {
-                builder.addStatement("target.$L = a.$L", binding.name, binding.getFormattedStatement());
+            for (StyleableBinding binding : styleableBindings.values()) {
+                // Wrap the styling with if-statement to check if there's a value first, this way we can
+                // keep existing default values if there isn't one and don't overwrite them.
+                // TODO Remove this if possible to let user specify default values, but I haven't found a way yet.
+                builder.beginControlFlow("if (a.hasValue($L))", binding.id);
+                if (binding.isMethod) {
+                    // Call the method directly
+                    builder.addStatement("target.$L(a.$L)", binding.name, binding.getFormattedStatement());
+                } else {
+                    builder.addStatement("target.$L = a.$L", binding.name, binding.getFormattedStatement());
+                }
+                if (binding.isRequired) {
+                    builder.nextControlFlow("else")
+                            .addStatement("throw new $T(\"Missing required attribute \'$L\' while styling \'$L\'\")", IllegalStateException.class, binding.name, targetClass);
+                }
+                builder.endControlFlow();
             }
-            if (binding.isRequired) {
-                builder.nextControlFlow("else")
-                        .addStatement("throw new $T(\"Missing required attribute \'$L\' while styling \'$L\'\")", IllegalStateException.class, binding.name, targetClass);
-            }
-            builder.endControlFlow();
+
+            builder.addStatement("a.recycle()");
         }
 
-        builder.addStatement("a.recycle()");
-        builder.endControlFlow();
-
-        for (AndroidAttrBinding binding : androidAttrBindings.values()) {
-            if (binding.isMethod) {
-                // Call the method directly
-                builder.addStatement("target.$L(set.$L)", binding.name, binding.getFormattedStatement());
-            } else {
-                builder.addStatement("target.$L = set.$L", binding.name, binding.getFormattedStatement());
+        if (!androidAttrBindings.isEmpty()) {
+            for (AndroidAttrBinding binding : androidAttrBindings.values()) {
+                if (binding.isMethod) {
+                    // Call the method directly
+                    builder.addStatement("target.$L(set.$L)", binding.name, binding.getFormattedStatement());
+                } else {
+                    builder.addStatement("target.$L = set.$L", binding.name, binding.getFormattedStatement());
+                }
             }
         }
 
