@@ -4,15 +4,22 @@ Barber
 
 Barber is your personal custom view stylist.
 
-* Simply annotate your fields using the `@StyledAttr` annotation
+* Simply annotate your fields using the `@StyledAttr` or `@AndroidAttr` annotations
 * Call the appropriate `Barber.style(this...)` variant
-* Let `Barber` take care of all the obtainStyledAttributes() and TypedArray boilerplate for you.
+* Let `Barber` take care of all the boilerplate for you.
 * Profit
 
 This library is heavily influenced by Jake Wharton's [Butterknife](https://github.com/JakeWharton/butterknife) library, and was actually [suggested to me](http://www.reddit.com/r/androiddev/comments/2ue4rm/i_want_to_learn_annotation_processing_but_cant/co7n093?context=3) by the man himself.
 
+Barber has two annotations that you use: `@StyledAttr` and `@AndroidAttr`. These can be used on either fields (if you want to keep the value) or methods (specifically, setters). `StyledAttr` is used for retrieving custom attrs for custom views. `@AndroidAttr` is used for retrieving values for attributes in the android namespace.
+
+The Barber class has 3 overloaded `style()` methods, so you can call the appropriate one from whichever constructor you prefer. Note that annotated fields or methods cannot be private, and must at least be package accessible. This is because Barber will generate a `**$$Barbershop` class in the same package as the target class.
+
 Usage
 -----
+
+#### StyledAttr
+
 Declare your styled attributes in your `attrs.xml`, like you normally would. For example:
 
 ```xml
@@ -23,8 +30,6 @@ Declare your styled attributes in your `attrs.xml`, like you normally would. For
     <attr name="toggleAnimation" format="reference" />
 </declare-styleable>
 ```
-
-Barber has a single annotation that you use: `@StyledAttr`. This can be used on either fields (if you want to keep the value) or methods (specifically, setters).
 
 ```java
 public class BarberView extends FrameLayout {
@@ -61,8 +66,6 @@ public class BarberView extends FrameLayout {
     }
 }
 ```
-
-The Barber class has 3 overloaded `style()` methods, so you can call the appropriate one from whichever constructor you prefer.
 
 By default, Barber will resolve which `TypedArray` method to use based on the type of the target. That is, if you declare it on an `int`, then Barber will generate code that calls `typedArray.getInt(...)`.
 
@@ -104,7 +107,16 @@ public float testFractionBase;
 
 See the [Kind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/java/io/sweers/barber/Kind.java) for a full list of supported types.
 
-Note that these fields or methods cannot be private, and must at least be package accessible. This is because Barber will generate a `**$$Barbershop` class in the same package as the target class.
+#### StyledAttr
+
+If you want to retrieve the value of an Android attribute, you can use `@AndroidAttr` to retrieve its value
+
+```java
+@AndroidAttr("textAllCaps")
+public boolean textAllCaps;
+```
+
+These are subject to the same rules as `@StyledAttr` regarding special return types. See the [AttrSetKind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/java/io/sweers/barber/AttrSetKind.java) for a full list of supported types. Right now it's just limited to the API of `AttributeSet`, but I may look into adding a more flexible API layer on top of this for massaging the returned data if people express an interest.
 
 Required attributes
 -------------------
@@ -120,9 +132,11 @@ Now, if a view is inflated without specifying this attribute, its generated `$$B
 
 `Missing required attribute 'requiredString' while styling 'io.sweers.barber.sample.testing.RequiredTestView'`
 
+**NOTE:** Due to how `AttributeSet`'s interface works, `@Required` is not compatible with `@AndroidAttr` annotations.
+
 A word about default values
 ---------------------------
-Due to limitations of how annotations work, you cannot specify a default value in the annotation. However, Barber *will not* override any existing values on a field if there is no value at that index. So if you want a default value, initialize the field to it. Unfortunately, annotated setters are out of luck here.
+Due to limitations of how annotations work, you cannot specify a default value in the annotation. For `@StyledAttr` fields however, Barber *will not* override any existing values on a field if there is no value at that index. So if you want a default value, initialize the field to it. This is because we can check if the `TypedArray` contains a value without retrieving it. Unfortunately, annotated setters and fields annotated with `@AndroidAttr` are out of luck here.
 
 Installation
 ------------
