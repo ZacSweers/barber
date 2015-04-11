@@ -1,4 +1,4 @@
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Barber-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1612)
+[![Build Status](https://travis-ci.org/hzsweers/barber.svg?branch=master)](https://travis-ci.org/hzsweers/barber) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Barber-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1612)
 Barber
 ======
 
