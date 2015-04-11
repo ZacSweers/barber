@@ -29,4 +29,5 @@ publish {
     website = SITE_URL
     bintrayUser = BINTRAY_USER
     bintrayKey = BINTRAY_KEY
+    licences = ['Apache-2.0']
 }
