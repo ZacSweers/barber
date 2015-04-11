@@ -5,7 +5,6 @@ env:
     - ANDROID_SDKS=android-22,sysimg-22  ANDROID_TARGET=android-22  ANDROID_ABI=armeabi-v7a
 
 jdk:
- - oraclejdk7
  - oraclejdk8
 
 android:
@@ -25,8 +24,7 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
-  - ./gradlew clean check :sample:installDebug
-  - adb shell am instrument -w io.sweers.barber.sample.test/android.test.InstrumentationTestRunner
+  - ./gradlew clean check connectedAndroidTest
 
 branches:
   except:
