@@ -109,6 +109,7 @@ class Barbershop {
             builder.addStatement("$T a = target.getContext().obtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes)", TypedArray.class);
 
 
+            builder.addCode("// Retrieve custom attributes\n");
             for (StyleableBinding binding : styleableBindings.values()) {
                 // Wrap the styling with if-statement to check if there's a value first, this way we can
                 // keep existing default values if there isn't one and don't overwrite them.
@@ -131,6 +132,7 @@ class Barbershop {
         }
 
         if (!androidAttrBindings.isEmpty()) {
+            builder.addCode("// Retrieve android attr values\n");
             for (AndroidAttrBinding binding : androidAttrBindings.values()) {
                 if (binding.isMethod) {
                     // Call the method directly
