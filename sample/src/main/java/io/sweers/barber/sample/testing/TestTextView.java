@@ -33,9 +33,6 @@ public class TestTextView extends TextView {
     @AndroidAttr("lineSpacingMultiplier")
     public float lineSpacingMultiplier = 0;
 
-    @AndroidAttr(value = "targetApi", namespace = "http://schemas.android.com/tools")
-    public String targetApi = "banana";
-
     public int maxLines = 0;
 
     public TestTextView(Context context) {

@@ -30,6 +30,8 @@ import static io.sweers.barber.Kind.STANDARD;
  */
 class Barbershop {
 
+    private static final String ANDROID_ATTR_NAMESPACE = "http://schemas.android.com/apk/res/android";
+
     private final String classPackage;
     private final String className;
     private final String targetClass;
@@ -175,9 +177,8 @@ class Barbershop {
     public void createAndAddAndroidAttrBinding(Element element) {
         AndroidAttr instance = element.getAnnotation(AndroidAttr.class);
         String attr = instance.value();
-        String namespace = instance.namespace();
         AttrSetKind kind = instance.kind();
-        AndroidAttrBinding androidAttrBinding = new AndroidAttrBinding(element, attr, namespace, kind);
+        AndroidAttrBinding androidAttrBinding = new AndroidAttrBinding(element, attr, kind);
         if (androidAttrBindings.containsKey(attr)) {
             throw new IllegalStateException(String.format("Duplicate attr assigned for field %s and %s", androidAttrBinding.name, androidAttrBindings.get(attr).name));
         }
@@ -295,13 +296,11 @@ class Barbershop {
 
     private static class AndroidAttrBinding extends Binding {
         final String attrName;
-        final String namespace;
         private AttrSetKind kind;
 
-        AndroidAttrBinding(Element element, String attrName, String namespace, AttrSetKind kind) {
+        AndroidAttrBinding(Element element, String attrName, AttrSetKind kind) {
             super(element);
             this.attrName = attrName;
-            this.namespace = namespace;
             this.kind = kind;
         }
 
@@ -342,7 +341,7 @@ class Barbershop {
                 }
             }
 
-            return String.format(statement, namespace, attrName);
+            return String.format(statement, ANDROID_ATTR_NAMESPACE, attrName);
         }
     }
 }
