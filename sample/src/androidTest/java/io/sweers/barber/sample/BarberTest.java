@@ -141,10 +141,11 @@ public class BarberTest extends AndroidTestCase {
     @SmallTest
     public void testRequired() {
         try {
-            View.inflate(getContext(), R.layout.required_test_view, null);
+            View.inflate(getContext(), R.layout.required_styled_attr_test_view, null);
             fail("Expected missing required attribute exception");
         } catch (InflateException e) {
             // Success
+            assertTrue(true);
         }
     }
 

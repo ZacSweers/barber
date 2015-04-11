@@ -14,28 +14,28 @@ import io.sweers.barber.sample.R;
 /**
  * Created by hsweers on 3/6/15.
  */
-public class RequiredTestView extends View {
+public class RequiredStyledAttrTestView extends View {
 
     @Required
-    @StyledAttr(R.styleable.RequiredTestView_requiredString)
+    @StyledAttr(R.styleable.RequiredStyledAttrTestView_requiredString)
     public String requiredString;
 
-    public RequiredTestView(Context context) {
+    public RequiredStyledAttrTestView(Context context) {
         super(context);
     }
 
-    public RequiredTestView(Context context, AttributeSet attrs) {
+    public RequiredStyledAttrTestView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public RequiredTestView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RequiredStyledAttrTestView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        Barber.style(this, attrs, R.styleable.RequiredTestView, defStyleAttr);
+        Barber.style(this, attrs, R.styleable.RequiredStyledAttrTestView, defStyleAttr);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public RequiredTestView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public RequiredStyledAttrTestView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        Barber.style(this, attrs, R.styleable.RequiredTestView, defStyleAttr, defStyleRes);
+        Barber.style(this, attrs, R.styleable.RequiredStyledAttrTestView, defStyleAttr, defStyleRes);
     }
 }

@@ -298,6 +298,11 @@ class Barbershop {
 
         AndroidAttrBinding(Element element) {
             super(element);
+
+            if (isRequired) {
+                throw new IllegalStateException("Cannot use @Required annotations with @AndroidAttr!");
+            }
+
             AndroidAttr instance = element.getAnnotation(AndroidAttr.class);
             this.attrName = instance.value();
             this.kind = instance.kind();
