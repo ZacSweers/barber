@@ -16,6 +16,10 @@ ext {
         BINTRAY_KEY = props.getProperty('BINTRAY_KEY')
         VERSION_NAME = props.getProperty('VERSION_NAME')
         VERSION_CODE = props.getProperty('VERSION_CODE').toInteger()
+    } else {
+        BINTRAY_KEY = ""
+        VERSION_NAME = ""
+        VERSION_CODE = 0
     }
     SITE_URL = 'https://github.com/hzsweers/barber'
     GIT_URL = 'https://github.com/hzsweers/barber.git'
