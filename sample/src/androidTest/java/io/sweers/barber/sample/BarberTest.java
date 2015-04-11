@@ -1,6 +1,7 @@
 package io.sweers.barber.sample;
 
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.view.InflateException;
@@ -11,6 +12,7 @@ import java.util.Arrays;
 
 import io.sweers.barber.sample.testing.ChildTestView;
 import io.sweers.barber.sample.testing.GrandChildTestView;
+import io.sweers.barber.sample.testing.TestTextView;
 import io.sweers.barber.sample.testing.TestView;
 
 public class BarberTest extends AndroidTestCase {
@@ -18,6 +20,7 @@ public class BarberTest extends AndroidTestCase {
     private TestView testView;
     private ChildTestView childTestView;
     private GrandChildTestView grandChildTestView;
+    private TestTextView testTextView;
     private Resources res;
 
     @Override
@@ -26,6 +29,7 @@ public class BarberTest extends AndroidTestCase {
         testView = (TestView) View.inflate(getContext(), R.layout.test_view, null);
         childTestView = (ChildTestView) View.inflate(getContext(), R.layout.child_test_view, null);
         grandChildTestView = (GrandChildTestView) View.inflate(getContext(), R.layout.grand_child_test_view, null);
+        testTextView = (TestTextView) View.inflate(getContext(), R.layout.test_textview, null);
         res = getContext().getResources();
     }
 
