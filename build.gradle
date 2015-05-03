@@ -4,16 +4,16 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.3'
+        classpath 'com.android.tools.build:gradle:1.2.2'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
-        classpath 'com.novoda:bintray-release:0.2.9'    // clean build bintrayUpload -PdryRun={true|false}
+        classpath 'com.novoda:bintray-release:0.2.10'    // clean build bintrayUpload -PdryRun={true|false}
     }
 }
 
 ext {
-    if (file("private.props").exists()) {
+    if (file("private.properties").exists()) {
         Properties props = new Properties()
-        props.load(new FileInputStream(file("private.props")))
+        props.load(new FileInputStream(file("private.properties")))
         BINTRAY_KEY = props.getProperty('BINTRAY_KEY')
         VERSION_NAME = props.getProperty('VERSION_NAME')
         VERSION_CODE = props.getProperty('VERSION_CODE').toInteger()
@@ -28,20 +28,57 @@ ext {
     GROUP_NAME = 'io.sweers.barber'
     COMPILE_SDK = 22
     BUILD_TOOLS = '22.0.1'
+    IS_UPLOADING = project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload')}
 }
 
-allprojects {
+subprojects {
     repositories {
         jcenter()
     }
 
     group = GROUP_NAME
     version = VERSION_NAME
-}
 
-subprojects {
-    repositories {
-        jcenter()
+    if (IS_UPLOADING && project.name in ['compiler', 'api']) {
+        println project.name
+        apply plugin: 'maven'
+
+        gradle.taskGraph.whenReady { taskGraph ->
+            taskGraph.getAllTasks().find{it.path == ":$project.name:generatePomFileForMavenPublication"}.doLast {
+                file("build/publications/maven/pom-default.xml").delete()
+                pom {
+                    //noinspection GroovyAssignabilityCheck
+                    project {
+                        name "barber-$project.name"
+                        artifactId "barber-$project.name"
+                        packaging project.name == 'compiler' ? 'jar' : 'aar'
+                        description 'An annotation processor library for styling custom views.'
+                        url SITE_URL
+                        version VERSION_NAME
+
+                        scm {
+                            url GIT_URL
+                            connection GIT_URL
+                            developerConnection GIT_URL
+                        }
+
+                        licenses {
+                            license {
+                                name 'The Apache Software License, Version 2.0'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id 'pandanomic'
+                                name 'Henri Z. Sweers'
+                                email 'pandanomic@gmail.com'
+                            }
+                        }
+                    }
+                }.writeTo("build/publications/maven/pom-default.xml")
+            }
+        }
     }
 }
 
