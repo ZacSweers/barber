@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/hzsweers/barber.svg?branch=master)](https://travis-ci.org/hzsweers/barber) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Barber-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1612)
+[![Build Status](https://travis-ci.org/hzsweers/barber.svg?branch=master)](https://travis-ci.org/hzsweers/barber) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Barber-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1612) [![Maven Central](https://img.shields.io/maven-central/v/io.sweers.barber/barber-api.svg)](http://search.maven.org/#browse%7C-504042670)
 Barber
 ======
 
@@ -152,7 +152,7 @@ Installation
 ```groovy
 buildscript {
     repositories {
-        jcenter()
+        jcenter() // Also available in maven central
     }
     dependencies {
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
@@ -162,8 +162,8 @@ buildscript {
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-    apt 'io.sweers.barber:barber-compiler:1.2.0'
-    compile 'io.sweers.barber:barber-api:1.2.0'
+    apt 'io.sweers.barber:barber-compiler:1.2.1'
+    compile 'io.sweers.barber:barber-api:1.2.1'
 }
 ```
 
