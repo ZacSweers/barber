@@ -125,7 +125,7 @@ Like `StyledAttr`, the default behavior is to return the type of the field/param
 public int textColor;
 ```
 
-Right now it's just limited to the API of `AttributeSet`, but I may look into adding a more flexible API layer on top of this for massaging the returned data if people express an interest.
+Right now it's just limited to the API of `AttributeSet`, but I may look into adding a more flexible API layer on top of this for coercing the returned data if people express an interest.
 
 Required attributes
 -------------------
