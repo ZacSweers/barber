@@ -18,7 +18,7 @@ import io.sweers.barber.sample.testing.TestPreferencesActivity;
  * https://github.com/robolectric/robolectric/issues/1671
  */
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 21)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class PreferenceTest {
 
     private TestPreferencesActivity testPreferencesActivity;

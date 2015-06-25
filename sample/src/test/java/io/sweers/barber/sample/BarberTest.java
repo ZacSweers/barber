@@ -23,7 +23,7 @@ import io.sweers.barber.sample.testing.TestTextView;
 import io.sweers.barber.sample.testing.TestView;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 21)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class BarberTest {
 
     private Context context;
