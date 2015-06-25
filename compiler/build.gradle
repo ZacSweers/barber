@@ -15,7 +15,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':api')
     compile 'com.google.android:android:4.1.1.4'
-    compile 'com.squareup:javapoet:1.0.0'
+    compile 'com.squareup:javapoet:1.1.0'
     compile 'com.google.auto.service:auto-service:1.0-rc2'
 }
 
