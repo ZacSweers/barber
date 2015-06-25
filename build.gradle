@@ -4,9 +4,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.2'
+        classpath 'com.android.tools.build:gradle:1.2.3'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
         classpath 'com.novoda:bintray-release:0.2.10'    // clean build bintrayUpload -PdryRun={true|false}
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.10.1'
     }
 }
 
@@ -35,6 +36,8 @@ subprojects {
     repositories {
         jcenter()
     }
+
+    apply plugin: 'com.github.ben-manes.versions'   // ./gradlew dependencyUpdates -Drevision=release
 
     group = GROUP_NAME
     version = VERSION_NAME
@@ -80,8 +83,4 @@ subprojects {
             }
         }
     }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
 }
