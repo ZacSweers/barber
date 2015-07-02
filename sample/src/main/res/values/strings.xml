@@ -10,4 +10,6 @@
         <a href=\'https://github.com/hzsweers\'>GitHub</a>&nbsp;&nbsp;
         <a href=\'https://www.linkedin.com/profile/view?id=126301011\'>LinkedIn</a>
     ]]></string>
+    <string name="test_default_charseq">charsequence</string>
+    <string name="test_default_string">this is a string</string>
 </resources>

@@ -4,4 +4,5 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="test_dimen">16dp</dimen>
+    <item name="test_default_float" format="float" type="dimen">0.75</item>
 </resources>
