@@ -1,7 +1,9 @@
 package io.sweers.barber;
 
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -87,5 +89,12 @@ public class Barber {
         @SuppressWarnings("unused")
         String ANDROID_ATTR_NAMESPACE = "http://schemas.android.com/apk/res/android";
         void style(final T target, final AttributeSet set, final int[] attrs, final int defStyleAttr, final int defStyleRes);
+    }
+
+    @SuppressWarnings("unused")
+    public static float resolveFloatResource(Resources res, int resId) {
+        TypedValue outValue = new TypedValue();
+        res.getValue(resId, outValue, true);
+        return outValue.getFloat();
     }
 }
