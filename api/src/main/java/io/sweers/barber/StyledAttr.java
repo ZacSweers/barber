@@ -18,6 +18,8 @@ public @interface StyledAttr {
     // such as color ints or fraction floats
     Kind kind() default Kind.STANDARD;
 
+    int defaultValue() default -1;
+
     // Fraction base and parent base specifiers
     int base() default 1;
     int pbase() default 1;

@@ -20,8 +20,8 @@ import io.sweers.barber.StyledAttr;
  */
 public class BarberView extends FrameLayout {
 
-    @StyledAttr(value = R.styleable.BarberView_stripeColor, kind = Kind.COLOR)
-    int stripeColor = Color.BLUE;
+    @StyledAttr(value = R.styleable.BarberView_stripeColor, kind = Kind.COLOR, defaultValue = android.R.color.holo_red_dark)
+    int stripeColor;
 
     @StyledAttr(R.styleable.BarberView_stripeCount)
     int stripeCount = 3;

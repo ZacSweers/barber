@@ -1,5 +1,6 @@
 package io.sweers.barber;
 
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
@@ -21,7 +22,9 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
+import static io.sweers.barber.Kind.DIMEN;
 import static io.sweers.barber.Kind.FRACTION;
+import static io.sweers.barber.Kind.RES_ID;
 import static io.sweers.barber.Kind.STANDARD;
 
 /**
@@ -36,6 +39,7 @@ class Barbershop {
     private final Map<Integer, StyleableBinding> styleableBindings;
     private final Map<String, AndroidAttrBinding> androidAttrBindings;
     private String parentBarbershop;
+    private boolean hasDefaults = false;
 
     Barbershop(String classPackage, String className, String targetClass) {
         this.classPackage = classPackage;
@@ -55,7 +59,7 @@ class Barbershop {
      * @param filer Annotation filer instance provided by {@link BarberProcessor}
      * @throws IOException
      */
-    public void writeToFiler(Filer filer) throws IOException {
+    void writeToFiler(Filer filer) throws IOException {
         ClassName targetClassName = ClassName.get(classPackage, targetClass);
         TypeSpec.Builder barberShop = TypeSpec.classBuilder(className)
                 .addModifiers(Modifier.PUBLIC)
@@ -105,25 +109,45 @@ class Barbershop {
                 .endControlFlow();
 
         if (!styleableBindings.isEmpty()) {
+            if (hasDefaults) {
+                builder.addStatement("$T res = target.getContext().getResources()", Resources.class);
+            }
+
             // Proceed with obtaining the TypedArray if we got here
             builder.addStatement("$T a = target.getContext().obtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes)", TypedArray.class);
 
 
             builder.addCode("// Retrieve custom attributes\n");
             for (StyleableBinding binding : styleableBindings.values()) {
+
+                if (binding.kind == RES_ID && binding.hasDefaultValue() && !binding.isRequired) {
+                    // No overhead in resource retrieval for these, so no need to wrap in a hasValue check
+                    builder.addStatement(generateSetterStatement(binding), binding.name, binding.getFormattedStatement("a."));
+                    continue;
+                }
+
                 // Wrap the styling with if-statement to check if there's a value first, this way we can
                 // keep existing default values if there isn't one and don't overwrite them.
-                // TODO Remove this if possible to let user specify default values, but I haven't found a way yet.
                 builder.beginControlFlow("if (a.hasValue($L))", binding.id);
-                if (binding.isMethod) {
-                    // Call the method directly
-                    builder.addStatement("target.$L(a.$L)", binding.name, binding.getFormattedStatement());
-                } else {
-                    builder.addStatement("target.$L = a.$L", binding.name, binding.getFormattedStatement());
-                }
+                builder.addStatement(generateSetterStatement(binding), binding.name, binding.getFormattedStatement("a."));
+
                 if (binding.isRequired) {
-                    builder.nextControlFlow("else")
-                            .addStatement("throw new $T(\"Missing required attribute \'$L\' while styling \'$L\'\")", IllegalStateException.class, binding.name, targetClass);
+                    builder.nextControlFlow("else");
+                    builder.addStatement("throw new $T(\"Missing required attribute \'$L\' while styling \'$L\'\")", IllegalStateException.class, binding.name, targetClass);
+                } else if (binding.hasDefaultValue()) {
+                    builder.nextControlFlow("else");
+                    if (binding.kind != FRACTION && binding.kind != DIMEN && ("float".equals(binding.type) || "java.lang.Float".equals(binding.type))) {
+                        // Getting a float from resources is nasty
+                        builder.addStatement(generateSetterStatement(binding), binding.name, "Barber.resolveFloatResource(res, " + binding.defaultValue + ")");
+                    } else if ("android.graphics.drawable.Drawable".equals(binding.type)) {
+                        // Compatibility using ResourcesCompat.getDrawable(...)
+                        builder.addStatement(generateSetterStatement(binding), binding.name,
+                                "android.support.v4.content.res.ResourcesCompat.getDrawable(res, "
+                                        + binding.defaultValue
+                                        + ", target.getContext().getTheme())");
+                    } else {
+                        builder.addStatement(generateSetterStatement(binding), binding.name, generateResourceStatement(binding, "res.", true));
+                    }
                 }
                 builder.endControlFlow();
             }
@@ -134,16 +158,23 @@ class Barbershop {
         if (!androidAttrBindings.isEmpty()) {
             builder.addCode("// Retrieve android attr values\n");
             for (AndroidAttrBinding binding : androidAttrBindings.values()) {
-                if (binding.isMethod) {
-                    // Call the method directly
-                    builder.addStatement("target.$L(set.$L)", binding.name, binding.getFormattedStatement());
-                } else {
-                    builder.addStatement("target.$L = set.$L", binding.name, binding.getFormattedStatement());
-                }
+                builder.addStatement(generateSetterStatement(binding), binding.name, binding.getFormattedStatement("set."));
             }
         }
 
         return builder.build();
+    }
+
+    /**
+     * Convenience generator for method/field setting
+     */
+    private static String generateSetterStatement(Binding binding) {
+        // Call the method directly
+        if (binding.isMethod) {
+            return "target.$L($L)";
+        } else {
+            return "target.$L = $L";
+        }
     }
 
     private MethodSpec generateCheckParentMethod() {
@@ -160,21 +191,29 @@ class Barbershop {
         return builder.build();
     }
 
-    public void createAndAddStyleableBinding(Element element) {
+    void createAndAddStyleableBinding(Element element) {
         StyleableBinding binding = new StyleableBinding(element);
         if (styleableBindings.containsKey(binding.id)) {
             throw new IllegalStateException(String.format("Duplicate ID assigned for field %s and %s", binding.name, styleableBindings.get(binding.id).name));
         } else {
             styleableBindings.put(binding.id, binding);
         }
+
+        if (!hasDefaults && binding.hasDefaultValue()) {
+            hasDefaults = true;
+        }
     }
 
-    public void createAndAddAndroidAttrBinding(Element element) {
+    void createAndAddAndroidAttrBinding(Element element) {
         AndroidAttrBinding binding = new AndroidAttrBinding(element);
         if (androidAttrBindings.containsKey(binding.attrName)) {
             throw new IllegalStateException(String.format("Duplicate attr assigned for field %s and %s", binding.name, androidAttrBindings.get(binding.attrName).name));
         } else {
             androidAttrBindings.put(binding.attrName, binding);
+        }
+
+        if (!hasDefaults && binding.hasDefaultValue()) {
+            hasDefaults = true;
         }
     }
 
@@ -183,6 +222,8 @@ class Barbershop {
         final String type;
         final boolean isMethod;
         final boolean isRequired;
+        final int defaultValue;
+        final boolean hasDefaultValue;
 
         public Binding(Element element) {
             if (element.getKind() == ElementKind.FIELD) {
@@ -196,10 +237,25 @@ class Barbershop {
 
             isRequired = element.getAnnotation(Required.class) != null;
             isMethod = element.getKind() == ElementKind.METHOD;
+            defaultValue = resolveDefault(element);
+            hasDefaultValue = defaultValue != -1;
+        }
+
+        private int resolveDefault(Element element) {
+            StyledAttr styledAttr = element.getAnnotation(StyledAttr.class);
+            if (styledAttr != null) {
+                return styledAttr.defaultValue();
+            }
+
+            return -1;
+        }
+
+        public boolean hasDefaultValue() {
+            return hasDefaultValue;
         }
 
         @SuppressWarnings("unused")
-        public abstract String getFormattedStatement();
+        public abstract String getFormattedStatement(String prefix);
     }
 
     private static class StyleableBinding extends Binding {
@@ -223,72 +279,103 @@ class Barbershop {
         }
 
         @Override
-        public String getFormattedStatement() {
-            String statement;
-            if (kind == STANDARD) {
-                switch (type) {
-                    case "java.lang.Integer":
-                    case "int":
-                        statement = "getInt(%d, -1)";
-                        break;
-                    case "java.lang.Boolean":
-                    case "boolean":
-                        statement = "getBoolean(%d, false)";
-                        break;
-                    case "java.lang.Float":
-                    case "float":
-                        statement = "getFloat(%d, -1f)";
-                        break;
-                    case "java.lang.String":
-                        statement = "getString(%d)";
-                        break;
-                    case "java.lang.CharSequence":
-                        statement = "getText(%d)";
-                        break;
-                    case "android.graphics.drawable.Drawable":
-                        statement = "getDrawable(%d)";
-                        break;
-                    case "java.lang.CharSequence[]":
-                        statement = "getTextArray(%d)";
-                        break;
-                    case "android.content.res.ColorStateList":
-                        statement = "getColorStateList(%d)";
-                        break;
-                    default:
-                        throw new IllegalArgumentException(String.format("Invalid type %s for id %d", type, id));
-                }
-            } else {
-                switch (kind) {
-                    case COLOR:
-                        statement = "getColor(%d, -1)";
-                        break;
-                    case FRACTION:
-                        statement = "getFraction(%d, " + fractBase + ", " + fractPBase + ", -1f)";
-                        break;
-                    case INTEGER:
-                        statement = "getInteger(%d, -1)";
-                        break;
-                    case DIMEN:
-                        statement = "getDimension(%d, -1f)";
-                        break;
-                    case DIMEN_PIXEL_SIZE:
-                        statement = "getDimensionPixelSize(%d, -1)";
-                        break;
-                    case DIMEN_PIXEL_OFFSET:
-                        statement = "getDimensionPixelOffset(%d, -1)";
-                        break;
-                    case RES_ID:
-                        statement = "getResourceId(%d, -1)";
-                        break;
-                    case NON_RES_STRING:
-                        statement = "getNonResourceString(%d)";
-                        break;
-                    default:
-                        throw new IllegalArgumentException(String.format("Invalid attrType %s for id %d", kind.name(), id));
-                }
-            }
+        public String getFormattedStatement(String prefix) {
+            return generateResourceStatement(this, prefix, false);
+        }
+    }
 
-            return String.format(statement, id);
+    private static String generateResourceStatement(StyleableBinding binding, String prefix, boolean forRes) {
+        String statement;
+        Kind kindToSwitchOn = binding.kind;
+
+        if (forRes) {
+            if (kindToSwitchOn == Kind.STANDARD && ("int".equals(binding.type) || "java.lang.Integer".equals(binding.type))) {
+                // These need to call Resources#getInteger()
+                kindToSwitchOn = Kind.INTEGER;
+            } else if (kindToSwitchOn == Kind.NON_RES_STRING) {
+                kindToSwitchOn = Kind.STANDARD;
+            }
+        }
+
+        if (kindToSwitchOn == STANDARD) {
+            switch (binding.type) {
+                case "java.lang.Integer":
+                case "int":
+                    statement = "getInt(%d, -1)";
+                    break;
+                case "java.lang.Boolean":
+                case "boolean":
+                    statement = "getBoolean(%d, false)";
+                    break;
+                case "java.lang.Float":
+                case "float":
+                    statement = "getFloat(%d, -1f)";
+                    break;
+                case "java.lang.String":
+                    statement = "getString(%d)";
+                    break;
+                case "java.lang.CharSequence":
+                    statement = "getText(%d)";
+                    break;
+                case "android.graphics.drawable.Drawable":
+                    statement = "getDrawable(%d)";
+                    break;
+                case "java.lang.CharSequence[]":
+                    statement = "getTextArray(%d)";
+                    break;
+                case "android.content.res.ColorStateList":
+                    statement = "getColorStateList(%d)";
+                    break;
+                default:
+                    throw new IllegalArgumentException(String.format("Invalid type %s for id %d", binding.type, binding.id));
+            }
+        } else {
+            switch (kindToSwitchOn) {
+                case COLOR:
+                    statement = "getColor(%d, -1)";
+                    break;
+                case FRACTION:
+                    statement = "getFraction(%d, " + binding.fractBase + ", " + binding.fractPBase + ", -1f)";
+                    break;
+                case INTEGER:
+                    statement = "getInteger(%d, -1)";
+                    break;
+                case DIMEN:
+                    statement = "getDimension(%d, -1f)";
+                    break;
+                case DIMEN_PIXEL_SIZE:
+                    statement = "getDimensionPixelSize(%d, -1)";
+                    break;
+                case DIMEN_PIXEL_OFFSET:
+                    statement = "getDimensionPixelOffset(%d, -1)";
+                    break;
+                case RES_ID:
+                    statement = "getResourceId(%d, " + (binding.hasDefaultValue() ? binding.defaultValue : "-1") + ")";
+                    break;
+                case NON_RES_STRING:
+                    statement = "getNonResourceString(%d)";
+                    break;
+                default:
+                    throw new IllegalArgumentException(String.format("Invalid type %s for id %d", binding.type, binding.id));
+            }
+        }
+
+        return prefix + String.format(
+                forRes ? chompLastParam(statement) : statement,
+                forRes ? binding.defaultValue : binding.id
+        );
+    }
+
+    /**
+     * Remove the last param if there are multiple, used for when we want to adapt a resource getter
+     * to one used with {@link Resources}
+     */
+    private static String chompLastParam(String input) {
+        int lastCommaIndex = input.lastIndexOf(',');
+        if (lastCommaIndex == -1) {
+            return input;
+        } else {
+            return input.substring(0, lastCommaIndex) + ")";
         }
     }
 
@@ -309,7 +396,7 @@ class Barbershop {
         }
 
         @Override
-        public String getFormattedStatement() {
+        public String getFormattedStatement(String prefix) {
             String statement;
             if (kind == AttrSetKind.STANDARD) {
                 switch (type) {
@@ -345,7 +432,7 @@ class Barbershop {
                 }
             }
 
-            return String.format(statement, "ANDROID_ATTR_NAMESPACE", "\"" + attrName + "\"");
+            return prefix + String.format(statement, "ANDROID_ATTR_NAMESPACE", "\"" + attrName + "\"");
         }
     }
 }
