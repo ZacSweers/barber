@@ -42,7 +42,7 @@ public class BarberView extends FrameLayout {
     @StyledAttr(R.styleable.BarberView_stripeCount)
     public int stripeCount;
 
-    @StyledAttr(R.styleable.BarberView_animated)
+    @StyledAttr(value = R.styleable.BarberView_animated, defaultValue = R.bool.animated_default)
     public boolean isAnimated;
 
     public BarberView(Context context) {
@@ -109,6 +109,15 @@ public float testFractionBase;
 
 See the [Kind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/java/io/sweers/barber/Kind.java) for a full list of supported types.
 
+*What about default values?*
+
+You're in luck! `@StyledAttr` now supports specifying resource IDs for default values.
+
+```java
+@StyledAttr(value = R.styleable.BarberView_animated, defaultValue = R.bool.animated_default)
+public boolean isAnimated;
+```
+
 #### AndroidAttr
 
 If you want to retrieve the value of an Android attribute, you can use `@AndroidAttr` to retrieve its value
@@ -118,7 +127,7 @@ If you want to retrieve the value of an Android attribute, you can use `@Android
 public boolean textAllCaps;
 ```
 
-Like `StyledAttr`, the default behavior is to return the type of the field/param. These are also subject to the same approach as `@StyledAttr` regarding special return types. See the [AttrSetKind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/java/io/sweers/barber/AttrSetKind.java) for a full list of supported types.
+Like `StyledAttr`, the normal behavior is to return the type of the field/param. These are also subject to the same approach as `@StyledAttr` regarding special return types. See the [AttrSetKind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/java/io/sweers/barber/AttrSetKind.java) for a full list of supported types.
 
 ```java
 @AndroidAttr(value = "textColor", kind = AttrSetKind.RESOURCE)
@@ -129,7 +138,7 @@ Right now it's just limited to the API of `AttributeSet`, but I may look into ad
 
 Required attributes
 -------------------
-If you want to require an attribute to be specified (beyond just checking if the value is still the default), you can use the `@Required` annotation as well.
+If you want to require an attribute to be specified, you can use the `@Required` annotation as well.
 
 ```java
 @Required
@@ -142,10 +151,6 @@ Now, if a view is inflated without specifying this attribute, its generated `$$B
 `Missing required attribute 'requiredString' while styling 'io.sweers.barber.sample.testing.RequiredTestView'`
 
 **NOTE:** Due to how `AttributeSet`'s interface works, `@Required` is not compatible with `@AndroidAttr` annotations.
-
-A word about default values
----------------------------
-Due to limitations of how annotations work, you cannot specify a default value in the annotation. For `@StyledAttr` fields however, Barber *will not* override any existing values on a field if there is no value at that index. So if you want a default value, initialize the field to it. This is because we can check if the `TypedArray` contains a value without retrieving it. Unfortunately, annotated setters and fields annotated with `@AndroidAttr` are out of luck here.
 
 Installation
 ------------
