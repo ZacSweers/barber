@@ -80,6 +80,14 @@ subprojects {
                         }
                     }
                 }.writeTo("build/publications/maven/pom-default.xml")
+
+                if (project.name == "compiler") {
+                    // Temporary hack to fix the release
+                    File pomFile = file("compiler/build/publications/maven/pom-default.xml")
+                    String content = pomFile.getText('UTF-8')
+                    content = content.replaceAll('<artifactId>api</artifactId>', '<artifactId>barber-api</artifactId>')
+                    pomFile.write(content, 'UTF-8')
+                }
             }
         }
     }
