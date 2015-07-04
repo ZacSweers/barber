@@ -76,7 +76,7 @@ By default, Barber will resolve which `TypedArray` method to use based on the ty
 public int stripeCount;
 ```
 
-*"But wait, sometimes my int is a color!".*
+**"But wait, sometimes my int is a color!".**
 
 If you have a special case, such as colors, then you can specify the `kind` member of the annotation with the appropriate `Kind` enum to let Barber know.
 
@@ -109,9 +109,9 @@ public float testFractionBase;
 
 See the [Kind enum](https://github.com/hzsweers/barber/blob/master/api/src/main/java/io/sweers/barber/Kind.java) for a full list of supported types.
 
-*What about default values?*
+**Default values**
 
-You're in luck! `@StyledAttr` now supports specifying resource IDs for default values.
+You can specify resource IDs for default values.
 
 ```java
 @StyledAttr(value = R.styleable.BarberView_animated, defaultValue = R.bool.animated_default)
