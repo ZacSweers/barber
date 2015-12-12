@@ -3,10 +3,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
-        classpath 'com.novoda:bintray-release:0.2.10'    // clean build bintrayUpload -PdryRun={true|false}
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.10.1'
+        classpath 'com.android.tools.build:gradle:1.5.0'    // Can't use 2.0 yet due to code.google.com/p/android/issues/detail?id=194996
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath 'com.novoda:bintray-release:0.3.4'    // clean build bintrayUpload -PdryRun={true|false}
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.11.3'
     }
 }
 
@@ -24,8 +24,8 @@ ext {
     GIT_URL = 'https://github.com/hzsweers/barber.git'
     BINTRAY_USER = 'pandanomic'
     GROUP_NAME = 'io.sweers.barber'
-    COMPILE_SDK = 22
-    BUILD_TOOLS = '22.0.1'
+    COMPILE_SDK = 23
+    BUILD_TOOLS = '23.0.2'
     IS_UPLOADING = project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload')}
 }
 
@@ -130,4 +130,9 @@ def String versionCode() {
     versionProps.load(new FileInputStream(versionPropsFile))
 
     return versionProps['code']
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.9'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
