@@ -2,16 +2,17 @@ language: android
 
 env:
   matrix:
-    - ANDROID_SDKS=android-22,sysimg-22  ANDROID_TARGET=android-22  ANDROID_ABI=armeabi-v7a
+    - ANDROID_SDKS=android-23,sysimg-23  ANDROID_TARGET=android-23  ANDROID_ABI=armeabi-v7a
 
 jdk:
  - oraclejdk8
 
 android:
   components:
-    - build-tools-22.0.1
-    - android-22
-    - sys-img-armeabi-v7a-android-22
+    - tools
+    - build-tools-23.0.2
+    - android-23
+    - sys-img-armeabi-v7a-android-23
     - extra-android-support
     - extra-android-m2repository
 
