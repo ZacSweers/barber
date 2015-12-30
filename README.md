@@ -160,7 +160,7 @@ buildscript {
         jcenter() // Also available in maven central
     }
     dependencies {
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     }
 }
 
@@ -172,22 +172,10 @@ dependencies {
 }
 ```
 
-The `api` module comes in the form of an AAR. If you want the `api` sources available in your IDE, consider using [this](https://github.com/xujiaao/AARLinkSources) handy gradle plugin.
-
 Proguard
 --------
 
-If you use Proguard, add the following lines to your rules
-```
--keep class **$$Barbershop { *; }
--keep class io.sweers.barber.** { *; }
--keepclasseswithmembers class * {
-    @io.sweers.barber.* <fields>;
-}
--keepclasseswithmembers class * {
-    @io.sweers.barber.* <methods>;
-}
-```
+If you use Proguard, [consumer proguard rules](https://github.com/hzsweers/barber/blob/master/api/consumer-proguard-rules.pro) are packaged in the `api` module AAR.
 
 License
 -------
