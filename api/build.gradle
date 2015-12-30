@@ -12,6 +12,7 @@ android {
         versionName VERSION_NAME
         minSdkVersion 14
         targetSdkVersion 23
+        consumerProguardFiles 'consumer-proguard-rules.pro'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
