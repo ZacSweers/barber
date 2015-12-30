@@ -10,6 +10,7 @@ jdk:
 android:
   components:
     - tools
+    - platform-tools
     - build-tools-23.0.2
     - android-23
     - sys-img-armeabi-v7a-android-23
