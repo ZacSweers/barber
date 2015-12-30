@@ -1,9 +1,5 @@
 language: android
 
-env:
-  matrix:
-    - ANDROID_TARGET=android-23  ANDROID_ABI=armeabi-v7a-14
-
 jdk:
  - oraclejdk8
 
@@ -13,16 +9,15 @@ android:
     - platform-tools
     - build-tools-23.0.2
     - android-23
-    - sys-img-armeabi-v7a-android-14
+    - sys-img-armeabi-v7a-android-18
     - extra-android-support
-
-before_install:
-  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
-  - emulator -avd test -no-skin -no-audio -no-window &
+    - extra-android-m2repository
 
 before_script:
+  - echo no | android create avd --force -n test -t android-18 --abi armeabi-v7a
+  - emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
-  - adb shell input keyevent 82 &
+  - adb shell input keyevent 82
 
 script:
   - ./gradlew clean check connectedAndroidTest

@@ -25,6 +25,7 @@ android {
     lintOptions {
         textReport true
         textOutput 'stdout'
+        abortOnError false
     }
     dexOptions {
         preDexLibraries = false
