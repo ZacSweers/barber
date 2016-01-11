@@ -2,8 +2,8 @@
     <string name="app_name">Barber Sample</string>
     <string name="testStringRes">Hello</string>
     <string name="about_body"><![CDATA[
-        A view attribute "injection" library for Android that generates the obtainStyledAttributes() and TypedArray boilerplate code for you.<br/><br/>
-        Written by Henri (Zac) Sweers.<br/><br/>
+        An attribute "injection" library for Android that generates the obtainStyledAttributes() and TypedArray boilerplate code for you.<br/><br/>
+        Written by Zac Sweers.<br/><br/>
         <a href=\'http://hzsweers.github.io\'>Website</a>&nbsp;&nbsp;
         <a href=\'https://twitter.com/pandanomic\'>Twitter</a>&nbsp;&nbsp;
         <a href=\'https://google.com/+HenriSweers\'>Google+</a>&nbsp;&nbsp;

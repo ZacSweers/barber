@@ -1,0 +1,13 @@
+apply plugin: 'java'
+
+sourceCompatibility = rootProject.ext.sourceCompatibilityVersion
+targetCompatibility = rootProject.ext.targetCompatibilityVersion
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':barber-annotations')
+    compile rootProject.ext.javapoet
+    compile rootProject.ext.autoService
+}
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

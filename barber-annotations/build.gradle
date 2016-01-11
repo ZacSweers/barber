@@ -1,0 +1,20 @@
+apply plugin: 'java'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+// Make android.jar provided
+configurations {
+    provided {
+        dependencies.all { dep ->
+            configurations.default.exclude group: dep.group, module: dep.name
+        }
+    }
+    compile.extendsFrom provided
+}
+
+dependencies {
+    provided fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

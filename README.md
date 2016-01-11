@@ -157,7 +157,7 @@ Installation
 ```groovy
 buildscript {
     repositories {
-        jcenter() // Also available in maven central
+        jcenter()
     }
     dependencies {
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
@@ -171,6 +171,8 @@ dependencies {
     compile 'io.sweers.barber:barber-api:1.3.1'
 }
 ```
+
+Snapshots of the development version are available in [Sonatype's snapshots repository][snapshots].
 
 Proguard
 --------
@@ -193,3 +195,5 @@ License
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+ [snapshots]: https://oss.sonatype.org/content/repositories/snapshots/

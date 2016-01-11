@@ -1,0 +1,53 @@
+apply plugin: 'com.android.library'
+
+dependencies {
+    compile project(':barber-annotations')
+    compile rootProject.ext.supportV4
+    compile rootProject.ext.supportAnnotations
+    compile rootProject.ext.arraySetBackport
+}
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        consumerProguardFiles 'consumer-proguard-rules.pro'
+    }
+
+    compileOptions {
+        sourceCompatibility rootProject.ext.sourceCompatibilityVersion
+        targetCompatibility rootProject.ext.targetCompatibilityVersion
+    }
+
+    dexOptions {
+        preDexLibraries = !rootProject.ext.ci
+    }
+
+    lintOptions {
+        abortOnError true
+        check 'NewApi', 'InlinedApi'
+        fatal 'NewApi', 'InlinedApi'
+        checkReleaseBuilds true
+
+        textReport rootProject.ext.ci
+        textOutput 'stdout'
+
+        htmlReport !rootProject.ext.ci
+        xmlReport !rootProject.ext.ci
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+    }
+}
+
+// The default 'assemble' task only applies to normal variants. Add test variants as well.
+afterEvaluate {
+    android.testVariants.all { variant ->
+        tasks.getByName('assemble').dependsOn variant.assemble
+    }
+}
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
