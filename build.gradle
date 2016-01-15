@@ -1,5 +1,5 @@
 ext {
-    androidPlugin = 'com.android.tools.build:gradle:2.0.0-alpha3'
+    androidPlugin = 'com.android.tools.build:gradle:2.0.0-alpha5'
     minSdkVersion = 14
     targetSdkVersion = 23
     compileSdkVersion = 23
@@ -8,7 +8,7 @@ ext {
     sourceCompatibilityVersion = JavaVersion.VERSION_1_7
     targetCompatibilityVersion = JavaVersion.VERSION_1_7
 
-    gradleVersionsPlugin = 'com.github.ben-manes:gradle-versions-plugin:0.11.3'
+    gradleVersionsPlugin = 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
     aptPlugin = 'com.neenbedankt.gradle.plugins:android-apt:1.8'
 
     ci = 'true'.equals(System.getenv('CI'))
