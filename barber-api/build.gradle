@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.ben-manes.versions'
 
 dependencies {
     compile project(':barber-annotations')

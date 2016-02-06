@@ -7,6 +7,7 @@ buildscript {
 
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
+apply plugin: 'com.github.ben-manes.versions'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -14,10 +15,10 @@ android {
 
     defaultConfig {
         applicationId 'io.sweers.barber.sample'
-        versionCode 1
-        versionName "1.0.0"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0.0"
     }
     buildTypes {
         debug {

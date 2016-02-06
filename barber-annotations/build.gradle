@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'com.github.ben-manes.versions'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
@@ -14,7 +15,7 @@ configurations {
 }
 
 dependencies {
-    provided fileTree(dir: 'libs', include: ['*.jar'])
+    provided 'com.google.android:android:4.1.1.4'
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
