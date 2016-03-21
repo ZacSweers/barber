@@ -39,6 +39,11 @@ public class BarberView extends FrameLayout {
     @StyledAttr(value = R.styleable.BarberView_stripeColor, kind = Kind.COLOR)
     public int stripeColor;
 
+    // alternately if you use support annotations, the kind can be inferred
+    // @StyledAttr(R.styleable.BarberView_stripeColor)
+    // @ColorInt
+    // public int stripeColor;
+
     @StyledAttr(R.styleable.BarberView_stripeCount)
     public int stripeCount;
 
@@ -131,7 +136,7 @@ Like `StyledAttr`, the normal behavior is to return the type of the field/param.
 
 ```java
 @AndroidAttr(value = "textColor", kind = AttrSetKind.RESOURCE)
-public int textColor;
+public int textColor; // alternately use @ColorRes and RESOURCE kind will be inferred
 ```
 
 Right now it's just limited to the API of `AttributeSet`, but I may look into adding a more flexible API layer on top of this for coercing the returned data if people express an interest.

@@ -2,6 +2,15 @@ package io.sweers.barber;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.support.annotation.AnyRes;
+import android.support.annotation.BoolRes;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.IntegerRes;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 
 import com.squareup.javapoet.ClassName;
@@ -287,7 +296,7 @@ class Barbershop {
             super(element);
             StyledAttr instance = element.getAnnotation(StyledAttr.class);
             this.id = instance.value();
-            this.kind = instance.kind();
+            this.kind = getKindFromSupportAnnotations(element, instance.kind());
             if (kind == FRACTION) {
                 fractBase = instance.base();
                 fractPBase = instance.pbase();
@@ -298,6 +307,15 @@ class Barbershop {
         public String getFormattedStatement(String prefix) {
             return generateResourceStatement(this, prefix, false);
         }
+    }
+
+    private static Kind getKindFromSupportAnnotations(Element element, Kind annotatedKind) {
+        if (hasSupportResAnnotation(element)){
+            return Kind.RES_ID;
+        } else if (element.getAnnotation(ColorInt.class) != null) {
+            return Kind.COLOR;
+        }
+        return annotatedKind;
     }
 
     private static String generateResourceStatement(StyleableBinding binding, String prefix, boolean forRes) {
@@ -408,7 +426,7 @@ class Barbershop {
 
             AndroidAttr instance = element.getAnnotation(AndroidAttr.class);
             this.attrName = instance.value();
-            this.kind = instance.kind();
+            this.kind = getAttrKindFromSupportAnnotations(element, instance.kind());
         }
 
         @Override
@@ -450,6 +468,26 @@ class Barbershop {
 
             return prefix + String.format(statement, "ANDROID_ATTR_NAMESPACE", "\"" + attrName + "\"");
         }
+    }
+
+    private static AttrSetKind getAttrKindFromSupportAnnotations(Element element, AttrSetKind annotatedKind) {
+        if (hasSupportResAnnotation(element)){
+            return AttrSetKind.RESOURCE;
+        }
+        return annotatedKind;
+    }
+
+    private static boolean hasSupportResAnnotation(Element element) {
+        return element.getAnnotation(DrawableRes.class) != null
+                || element.getAnnotation(ColorRes.class) != null
+                || element.getAnnotation(IntegerRes.class) != null
+                || element.getAnnotation(ColorRes.class) != null
+                || element.getAnnotation(DimenRes.class) != null
+                || element.getAnnotation(IntegerRes.class) != null
+                || element.getAnnotation(StringRes.class) != null
+                || element.getAnnotation(BoolRes.class) != null
+                || element.getAnnotation(LayoutRes.class) != null
+                || element.getAnnotation(AnyRes.class) != null;
     }
 
     private static class ResolvedAttrBinding extends Binding {

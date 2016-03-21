@@ -5,6 +5,7 @@ sourceCompatibility = rootProject.ext.sourceCompatibilityVersion
 targetCompatibility = rootProject.ext.targetCompatibilityVersion
 
 dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.google.android:android:4.1.1.4'
     compile project(':barber-annotations')
     compile rootProject.ext.javapoet
