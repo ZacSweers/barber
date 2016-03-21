@@ -15,12 +15,21 @@ android:
 
 before_script:
   - echo no | android create avd --force -n test -t android-18 --abi armeabi-v7a
-  - emulator -avd test -no-skin -no-audio -no-window &
+  - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82
 
 script:
   - ./gradlew clean check connectedAndroidTest
+
+after_success:
+- .buildscript/deploy_snapshot.sh
+
+env:
+  global:
+    - secure: "aOGD1/u6volXZU+jRFDIipcrg9z9bzslrZs0iyxMNqzLpkgtnF1akyczrAiQLcveQDaqF58tVOFCAoQbcCpoKlhOA5yNOvNLr5EWUD2CIcFH4ujlAU5CJsKEejY/Eok6WUqnhTVdzM5l7zdegg1dOz/woREXwNUkcflFCIhUXOk="
+    - secure: "npnVNOzu64EmyNwRDC7f3hdck+NRwXBPXU27n2TcUmqQRfXIZUFA2WBXl5i/eRD4ZAM8n4SpfyxATa8ulOimuUglYqZndIpq36vqgDoemrRci0BJQWvrdMqp4NLgZVgEF7Gcm540mRbzQzsdzGrbDK9mlBuwZQOUdKBl0stEeDI="
+
 
 branches:
   except:

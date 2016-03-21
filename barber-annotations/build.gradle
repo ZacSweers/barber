@@ -1,0 +1,21 @@
+apply plugin: 'java'
+apply plugin: 'com.github.ben-manes.versions'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+// Make android.jar provided
+configurations {
+    provided {
+        dependencies.all { dep ->
+            configurations.default.exclude group: dep.group, module: dep.name
+        }
+    }
+    compile.extendsFrom provided
+}
+
+dependencies {
+    provided 'com.google.android:android:4.1.1.4'
+}
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

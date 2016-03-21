@@ -1,138 +1,61 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'    // Can't use 2.0 yet due to code.google.com/p/android/issues/detail?id=194996
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath 'com.novoda:bintray-release:0.3.4'    // clean build bintrayUpload -PdryRun={true|false}
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.11.3'
-    }
-}
-
 ext {
-    if (file("private.properties").exists()) {
-        Properties props = new Properties()
-        props.load(new FileInputStream(file("private.properties")))
-        BINTRAY_KEY = props.getProperty('BINTRAY_KEY')
-    } else {
-        BINTRAY_KEY = ""
-    }
-    VERSION_NAME = version()
-    VERSION_CODE = versionCode().toInteger()
-    SITE_URL = 'https://github.com/hzsweers/barber'
-    GIT_URL = 'https://github.com/hzsweers/barber.git'
-    BINTRAY_USER = 'pandanomic'
-    GROUP_NAME = 'io.sweers.barber'
-    COMPILE_SDK = 23
-    BUILD_TOOLS = '23.0.2'
-    IS_UPLOADING = project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload')}
+    androidPlugin = 'com.android.tools.build:gradle:2.0.0-beta6'
+    minSdkVersion = 14
+    targetSdkVersion = 23
+    compileSdkVersion = 23
+    buildToolsVersion = '23.0.2'
+
+    sourceCompatibilityVersion = JavaVersion.VERSION_1_7
+    targetCompatibilityVersion = JavaVersion.VERSION_1_7
+
+    gradleVersionsPlugin = 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
+    aptPlugin = 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+
+    ci = 'true'.equals(System.getenv('CI'))
+
+    def supportVersion = '23.1.1'
+    supportAnnotations = "com.android.support:support-annotations:$supportVersion"
+    supportV4 = "com.android.support:support-v4:$supportVersion"
+    supportAppCompat = "com.android.support:appcompat-v7:$supportVersion"
+
+    arraySetBackport = 'io.sweers.arraysetbackport:arraysetbackport:1.0.0'
+    javapoet = 'com.squareup:javapoet:1.5.1'
+    autoService = 'com.google.auto.service:auto-service:1.0-rc2'
+
+    junit = 'junit:junit:4.12'
+    robolectric = 'org.robolectric:robolectric:3.0'
 }
 
-subprojects {
+subprojects { project ->
+
     repositories {
         jcenter()
     }
 
-    apply plugin: 'com.github.ben-manes.versions'   // ./gradlew dependencyUpdates -Drevision=release
-
-    group = GROUP_NAME
+    group = GROUP
     version = VERSION_NAME
 
-    if (IS_UPLOADING && project.name in ['compiler', 'api']) {
-        println project.name
-        apply plugin: 'maven'
-
-        gradle.taskGraph.whenReady { taskGraph ->
-            taskGraph.getAllTasks().find{it.path == ":$project.name:generatePomFileForMavenPublication"}.doLast {
-                file("build/publications/maven/pom-default.xml").delete()
-                pom {
-                    //noinspection GroovyAssignabilityCheck
-                    project {
-                        name "barber-$project.name"
-                        artifactId "barber-$project.name"
-                        packaging project.name == 'compiler' ? 'jar' : 'aar'
-                        description 'An annotation processor library for styling custom views.'
-                        url SITE_URL
-                        version VERSION_NAME
-
-                        scm {
-                            url GIT_URL
-                            connection GIT_URL
-                            developerConnection GIT_URL
-                        }
-
-                        licenses {
-                            license {
-                                name 'The Apache Software License, Version 2.0'
-                            }
-                        }
-
-                        developers {
-                            developer {
-                                id 'pandanomic'
-                                name 'Henri Z. Sweers'
-                                email 'pandanomic@gmail.com'
-                            }
-                        }
-                    }
-                }.writeTo("build/publications/maven/pom-default.xml")
-            }
+    buildscript {
+        repositories {
+            jcenter()
+        }
+        dependencies {
+            classpath rootProject.ext.androidPlugin
+            classpath rootProject.ext.aptPlugin
+            classpath rootProject.ext.gradleVersionsPlugin
         }
     }
-}
 
-task bumpMajor << {
-    ant.propertyfile(file: 'version.properties') {
-        entry(key: 'major', type: 'int', operation: '+', value: 1)
-        entry(key: 'minor', type: 'int', operation: '=', value: 0)
-        entry(key: 'patch', type: 'int', operation: '=', value: 0)
-        entry(key: 'code', type: 'int', operation: '+', value: 1)
-    }
-}
-
-task bumpMinor << {
-    ant.propertyfile(file: 'version.properties') {
-        entry(key: 'minor', type: 'int', operation: '+', value: 1)
-        entry(key: 'patch', type: 'int', operation: '=', value: 0)
-        entry(key: 'code', type: 'int', operation: '+', value: 1)
-    }
-}
-
-task bumpPatch << {
-    ant.propertyfile(file: 'version.properties') {
-        entry(key: 'patch', type: 'int', operation: '+', value: 1)
-        entry(key: 'code', type: 'int', operation: '+', value: 1)
-    }
+//    project.apply plugin: 'com.github.ben-manes.versions'   // ./gradlew dependencyUpdates -Drevision=release
 }
 
 task genReadMe << {
     def template = file('README.md.template').text
-    def result = template.replaceAll("%%version%%", version())
+    def result = template.replaceAll("%%version%%", VERSION_NAME)
     file("README.md").withWriter{ it << result }
 }
 
-task version << {
-    println version()
-}
-
-def String version() {
-    def versionPropsFile = file('version.properties')
-    def Properties versionProps = new Properties()
-    versionProps.load(new FileInputStream(versionPropsFile))
-
-    return versionProps['major'] + "." + versionProps['minor'] + "." + versionProps['patch']
-}
-
-def String versionCode() {
-    def versionPropsFile = file('version.properties')
-    def Properties versionProps = new Properties()
-    versionProps.load(new FileInputStream(versionPropsFile))
-
-    return versionProps['code']
-}
-
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.9'
+    gradleVersion = '2.10'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
