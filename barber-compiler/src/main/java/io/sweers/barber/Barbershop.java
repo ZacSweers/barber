@@ -2,15 +2,6 @@ package io.sweers.barber;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.support.annotation.AnyRes;
-import android.support.annotation.BoolRes;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IntegerRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 
 import com.squareup.javapoet.ClassName;
@@ -26,10 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.processing.Filer;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
+import javax.lang.model.element.*;
 
 import io.sweers.barber.internal.BarberInternal;
 
@@ -312,7 +300,7 @@ class Barbershop {
     private static Kind getKindFromSupportAnnotations(Element element, Kind annotatedKind) {
         if (hasSupportResAnnotation(element)){
             return Kind.RES_ID;
-        } else if (element.getAnnotation(ColorInt.class) != null) {
+        } else if (hasAnnotationWithName(element, "ColorInt")) {
             return Kind.COLOR;
         }
         return annotatedKind;
@@ -478,16 +466,26 @@ class Barbershop {
     }
 
     private static boolean hasSupportResAnnotation(Element element) {
-        return element.getAnnotation(DrawableRes.class) != null
-                || element.getAnnotation(ColorRes.class) != null
-                || element.getAnnotation(IntegerRes.class) != null
-                || element.getAnnotation(ColorRes.class) != null
-                || element.getAnnotation(DimenRes.class) != null
-                || element.getAnnotation(IntegerRes.class) != null
-                || element.getAnnotation(StringRes.class) != null
-                || element.getAnnotation(BoolRes.class) != null
-                || element.getAnnotation(LayoutRes.class) != null
-                || element.getAnnotation(AnyRes.class) != null;
+        return hasAnnotationWithName(element, "DrawableRes")
+                || hasAnnotationWithName(element, "ColorRes")
+                || hasAnnotationWithName(element, "IntegerRes")
+                || hasAnnotationWithName(element, "ColorRes")
+                || hasAnnotationWithName(element, "DimenRes")
+                || hasAnnotationWithName(element, "IntegerRes")
+                || hasAnnotationWithName(element, "StringRes")
+                || hasAnnotationWithName(element, "BoolRes")
+                || hasAnnotationWithName(element, "LayoutRes")
+                || hasAnnotationWithName(element, "AnyRes");
+    }
+
+    private static boolean hasAnnotationWithName(Element element, String simpleName) {
+        for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
+            String annotationName = mirror.getAnnotationType().asElement().getSimpleName().toString();
+            if (simpleName.equals(annotationName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static class ResolvedAttrBinding extends Binding {
