@@ -2,12 +2,19 @@ package io.sweers.barber;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.drawable.VectorDrawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
@@ -91,9 +98,18 @@ class Barbershop {
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
-                .addParameter(TypeVariableName.get("T"), "target", Modifier.FINAL)
-                .addParameter(AttributeSet.class, "set", Modifier.FINAL)
-                .addParameter(int[].class, "attrs", Modifier.FINAL)
+                .addParameter(ParameterSpec.builder(
+                        TypeVariableName.get("T"), "target", Modifier.FINAL)
+                        .addAnnotation(NonNull.class)
+                        .build())
+                .addParameter(ParameterSpec.builder(
+                        AttributeSet.class, "set", Modifier.FINAL)
+                        .addAnnotation(Nullable.class)
+                        .build())
+                .addParameter(ParameterSpec.builder(
+                        int[].class, "attrs", Modifier.FINAL)
+                        .addAnnotation(NonNull.class)
+                        .build())
                 .addParameter(int.class, "defStyleAttr", Modifier.FINAL)
                 .addParameter(int.class, "defStyleRes", Modifier.FINAL);
 
@@ -186,6 +202,10 @@ class Barbershop {
                 .returns(boolean.class)
                 .addModifiers(Modifier.PROTECTED)
                 .addParameter(TypeVariableName.get("T"), "target", Modifier.FINAL)
+                .addStatement("$T api23Test", ClassName.get(VectorDrawable.class))
+                .addStatement("$T api23Test2", ClassName.get(VectorDrawableCompat.class))
+                .addStatement("$T api23Test3", ClassName.get(AppCompatImageView.class))
+                .addStatement("$T api23Test4", ClassName.get(DrawableCompat.class))
                 .addStatement("return this.lastStyledTargets.contains(target)");
 
         if (parentBarbershop != null) {

@@ -1,14 +1,29 @@
 apply plugin: 'java'
 apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'nebula.provided-base'
+apply plugin: 'io.sweers.acp'
 
 sourceCompatibility = rootProject.ext.sourceCompatibilityVersion
 targetCompatibility = rootProject.ext.targetCompatibilityVersion
 
+acp {
+  sdkPath = 'somewhere'
+}
+
 dependencies {
-    compile 'com.google.android:android:4.1.1.4'
-    compile project(':barber-annotations')
-    compile rootProject.ext.javapoet
-    compile rootProject.ext.autoService
+  compile project(':barber-annotations')
+  compile rootProject.ext.javapoet
+  compile rootProject.ext.autoService
+
+  provided androidApi(23)
+  provided 'com.android.support:support-annotations:23.4.0'
+  providedAar 'com.android.support:appcompat-v7:23.4.0'
+
+  // TODO Ideal situation
+//  compileOnly androidApi(23)
+//  compileOnly 'com.android.support:support-annotations:23.4.0'
+//  compileOnly 'com.android.support:appcompat-v7:23.4.0'
+
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
