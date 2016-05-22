@@ -3,54 +3,54 @@ apply plugin: 'android-apt'
 apply plugin: 'com.github.ben-manes.versions'
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+  compileSdkVersion rootProject.ext.compileSdkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
 
-    defaultConfig {
-        applicationId 'io.sweers.barber.sample'
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.0"
+  defaultConfig {
+    applicationId 'io.sweers.barber.sample'
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
+    versionCode 1
+    versionName "1.0.0"
+  }
+  buildTypes {
+    debug {
+      minifyEnabled true  // Make sure consumer proguard rules are working
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
-    buildTypes {
-        debug {
-            minifyEnabled true  // Make sure consumer proguard rules are working
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-    compileOptions {
-        sourceCompatibility rootProject.ext.sourceCompatibilityVersion
-        targetCompatibility rootProject.ext.targetCompatibilityVersion
-    }
-    lintOptions {
-        abortOnError true
-        check 'NewApi', 'InlinedApi'
-        fatal 'NewApi', 'InlinedApi'
-        checkReleaseBuilds true
+  }
+  compileOptions {
+    sourceCompatibility rootProject.ext.sourceCompatibilityVersion
+    targetCompatibility rootProject.ext.targetCompatibilityVersion
+  }
+  lintOptions {
+    abortOnError true
+    check 'NewApi', 'InlinedApi'
+    fatal 'NewApi', 'InlinedApi'
+    checkReleaseBuilds true
 
-        textReport rootProject.ext.ci
-        textOutput 'stdout'
+    textReport rootProject.ext.ci
+    textOutput 'stdout'
 
-        htmlReport !rootProject.ext.ci
-        xmlReport !rootProject.ext.ci
-    }
-    dexOptions {
-        preDexLibraries = !rootProject.ext.ci
-    }
-    packagingOptions {
-        exclude 'META-INF/services/javax.annotation.processing.Processor'
-    }
+    htmlReport !rootProject.ext.ci
+    xmlReport !rootProject.ext.ci
+  }
+  dexOptions {
+    preDexLibraries = !rootProject.ext.ci
+  }
+  packagingOptions {
+    exclude 'META-INF/services/javax.annotation.processing.Processor'
+  }
 }
 
 dependencies {
-    compile rootProject.ext.supportV4
-    compile rootProject.ext.supportAppCompat
+  compile rootProject.ext.supportV4
+  compile rootProject.ext.supportAppCompat
 
-    apt project(':barber-compiler')
-    apt project(path: ':barber-compiler', configuration: 'acp')
-    compile project(':barber-api')
+  apt project(':barber-compiler')
+  apt project(path: ':barber-compiler', configuration: 'acp')
+  compile project(':barber-api')
 
-    testCompile rootProject.ext.junit
-    testCompile rootProject.ext.robolectric
+  testCompile rootProject.ext.junit
+  testCompile rootProject.ext.robolectric
 }
