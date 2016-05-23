@@ -2,8 +2,8 @@ package io.sweers.acp
 
 import com.android.build.gradle.internal.LoggerWrapper
 import com.android.build.gradle.internal.SdkHandler
+import com.android.builder.sdk.DefaultSdkLoader
 import com.android.utils.ILogger
-import com.google.common.collect.ImmutableList
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Plugin
@@ -13,6 +13,8 @@ import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.UnknownConfigurationException
 import org.gradle.api.file.FileCollection
 import org.gradle.plugins.ide.idea.IdeaPlugin
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -21,6 +23,8 @@ public class AcpPlugin implements Plugin<Project> {
 
   @Override
   void apply(Project project) {
+    Logger pluginLogger = LoggerFactory.getLogger('acp-logger')
+
     if (project.plugins.hasPlugin('com.android.application')
         || project.plugins.hasPlugin('com.android.library')
         || project.plugins.hasPlugin('com.android.test')) {
@@ -31,19 +35,26 @@ public class AcpPlugin implements Plugin<Project> {
     Configuration acpConfig = project.configurations.create("acp")
     acpConfig.setVisible(false)
 
-    // TODO Try this first but fall back to manual searching otherwise
-    ILogger logger = new LoggerWrapper(project.logger)
-    SdkHandler sdkHandler = new SdkHandler(project, logger)
-    ImmutableList<File> repositories
-    String sdkLocation
-    try {
+    String sdkLocation;
+    List<File> repositories;
+
+    if (acp.sdkPath) {
+      pluginLogger.info("Using SDK path from extension")
+      sdkLocation = acp.sdkPath
+      repositories = DefaultSdkLoader.getLoader(new File(sdkLocation)).repositories
+    } else {
+      pluginLogger.info("Resolving SDK path via Android Gradle Plugin")
+      ILogger logger = new LoggerWrapper(project.logger)
+      SdkHandler sdkHandler = new SdkHandler(project, logger)
       sdkHandler.getAndCheckSdkFolder()
       repositories = sdkHandler.sdkLoader.repositories
       sdkLocation = sdkHandler.getSdkFolder().absolutePath
-    } catch (RuntimeException ignored) {
-      // TODO Fall back to manual attempt to find
-      repositories = ImmutableList.of()
-      sdkLocation = acp.sdkPath
+    }
+
+    if (!sdkLocation) {
+      throw new IllegalStateException("No SDK location found!")
+    } else if (!repositories || repositories.isEmpty()) {
+      pluginLogger.debug("Android Sdk repositories are empty. Are you up-to-date?")
     }
 
     for (File file : repositories) {
