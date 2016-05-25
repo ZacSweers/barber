@@ -1,14 +1,19 @@
 apply plugin: 'java'
 apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'io.sweers.acp'
 
-sourceCompatibility = rootProject.ext.sourceCompatibilityVersion
-targetCompatibility = rootProject.ext.targetCompatibilityVersion
+acp {
+  api = 23
+}
 
 dependencies {
-    compile 'com.google.android:android:4.1.1.4'
-    compile project(':barber-annotations')
-    compile rootProject.ext.javapoet
-    compile rootProject.ext.autoService
+  compile project(':barber-annotations')
+  compile rootProject.ext.javapoet
+  compile rootProject.ext.autoService
+
+  compileOnly rootProject.ext.supportV4
+  compileOnly rootProject.ext.supportAppCompat
+  compileOnly rootProject.ext.supportAnnotations
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

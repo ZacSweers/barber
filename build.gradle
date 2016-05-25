@@ -27,14 +27,6 @@ ext {
 }
 
 subprojects { project ->
-
-    repositories {
-        jcenter()
-    }
-
-    group = GROUP
-    version = VERSION_NAME
-
     buildscript {
         repositories {
             jcenter()
@@ -46,13 +38,23 @@ subprojects { project ->
         }
     }
 
-//    project.apply plugin: 'com.github.ben-manes.versions'   // ./gradlew dependencyUpdates -Drevision=release
+    repositories {
+        jcenter()
+    }
+
+    group = GROUP
+    version = VERSION_NAME
+
+    if (project.plugins.hasPlugin("java")) {
+        project.sourceCompatibility = JavaVersion.VERSION_1_7
+        project.targetCompatibility = JavaVersion.VERSION_1_7
+    }
 }
 
 task genReadMe << {
     def template = file('README.md.template').text
     def result = template.replaceAll("%%version%%", VERSION_NAME)
-    file("README.md").withWriter{ it << result }
+    file("README.md").withWriter { it << result }
 }
 
 task wrapper(type: Wrapper) {
