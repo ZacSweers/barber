@@ -2,7 +2,9 @@ package io.sweers.barber;
 
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
+import android.support.annotation.StyleableRes;
 import android.support.annotation.UiThread;
 import android.support.v4.util.ArrayMap;
 import android.util.AttributeSet;
@@ -13,8 +15,8 @@ import java.util.Map;
 import io.sweers.barber.internal.BarberInternal.IBarbershop;
 
 import static io.sweers.barber.internal.BarberInternal.ANDROID_PACKAGE_PREFIX;
-import static io.sweers.barber.internal.BarberInternal.JAVA_PACKAGE_PREFIX;
 import static io.sweers.barber.internal.BarberInternal.BARBER_CLASS_SUFFIX;
+import static io.sweers.barber.internal.BarberInternal.JAVA_PACKAGE_PREFIX;
 
 /**
  * Entry point for applications.
@@ -37,7 +39,10 @@ public class Barber {
      * @param attrs Array of attrs to retrieve
      */
     @UiThread
-    public static void style(@NonNull Object target, AttributeSet set, int[] attrs) {
+    public static void style(
+            @NonNull Object target,
+            @Nullable AttributeSet set,
+            @NonNull @StyleableRes int[] attrs) {
         style(target, set, attrs, 0);
     }
 
@@ -50,7 +55,11 @@ public class Barber {
      * @param defStyleAttr Style attr to use in styling ("R.attr.myStyle")
      */
     @UiThread
-    public static void style(@NonNull Object target, AttributeSet set, int[] attrs, @AttrRes int defStyleAttr) {
+    public static void style(
+            @NonNull Object target,
+            @Nullable AttributeSet set,
+            @NonNull @StyleableRes int[] attrs,
+            @AttrRes int defStyleAttr) {
         style(target, set, attrs, defStyleAttr, 0);
     }
 
@@ -64,7 +73,12 @@ public class Barber {
      * @param defStyleRes Style resource to use ("R.style.myStyle")
      */
     @UiThread
-    public static void style(@NonNull Object target, AttributeSet set, int[] attrs, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+    public static void style(
+            @NonNull Object target,
+            @Nullable AttributeSet set,
+            @NonNull @StyleableRes int[] attrs,
+            @AttrRes int defStyleAttr,
+            @StyleRes int defStyleRes) {
         Class<?> targetClass = target.getClass();
         if (DEBUG) {
             Log.d(TAG, "Looking up barbershop for " + targetClass.getName());

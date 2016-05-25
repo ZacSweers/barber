@@ -1,6 +1,18 @@
+buildscript {
+  repositories {
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+  }
+  dependencies {
+    classpath 'io.sweers.acp:gradle-plugin:0.1.0-SNAPSHOT'
+  }
+}
+
 apply plugin: 'java'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'io.sweers.acp'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
 
 acp {
     api = 23
