@@ -1,9 +1,9 @@
 ext {
-    androidPlugin = 'com.android.tools.build:gradle:2.1.0'
+    androidPlugin = 'com.android.tools.build:gradle:2.2.1'
     minSdkVersion = 14
-    targetSdkVersion = 23
-    compileSdkVersion = 23
-    buildToolsVersion = '23.0.3'
+    targetSdkVersion = 24
+    compileSdkVersion = 24
+    buildToolsVersion = '24.0.3'
 
     sourceCompatibilityVersion = JavaVersion.VERSION_1_7
     targetCompatibilityVersion = JavaVersion.VERSION_1_7
@@ -13,7 +13,7 @@ ext {
 
     ci = 'true'.equals(System.getenv('CI'))
 
-    def supportVersion = '23.3.0'
+    def supportVersion = '24.2.1'
     supportAnnotations = "com.android.support:support-annotations:$supportVersion"
     supportV4 = "com.android.support:support-v4:$supportVersion"
     supportAppCompat = "com.android.support:appcompat-v7:$supportVersion"
@@ -58,6 +58,6 @@ task genReadMe << {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.13'
+    gradleVersion = '2.14.1'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
