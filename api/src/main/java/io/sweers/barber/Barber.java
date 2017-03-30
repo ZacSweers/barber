@@ -16,7 +16,6 @@ import java.util.Map;
  */
 public class Barber {
 
-    public static final String SUFFIX = "$$Barbershop";
     public static final String ANDROID_PREFIX = "android.";
     public static final String JAVA_PREFIX = "java.";
     private static final String TAG = "Barber";
@@ -64,7 +63,7 @@ public class Barber {
         }
         //noinspection TryWithIdenticalCatches
         try {
-            Class<?> barbershopClass = Class.forName(clsName + SUFFIX);
+            Class<?> barbershopClass = Class.forName(clsName + Config.SUFFIX);
             //noinspection unchecked
             barbershop = (IBarbershop<Object>) barbershopClass.newInstance();
             if (debug) {

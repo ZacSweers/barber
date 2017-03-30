@@ -33,6 +33,10 @@ android {
     }
 }
 
+dependencies {
+    compile project(':annotations')
+}
+
 publish {
     userOrg = 'pandanomic'
     groupId = GROUP_NAME

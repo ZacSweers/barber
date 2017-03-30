@@ -1,9 +1,5 @@
 package io.sweers.barber;
 
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.util.AttributeSet;
-
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -32,6 +28,11 @@ import static io.sweers.barber.Kind.STANDARD;
  * style views.
  */
 class Barbershop {
+
+    private final static ClassName RESOURCES_CLASS_NAME = ClassName.get("android.content.res", "Resources");
+    private final static ClassName TYPED_ARRAY_CLASS_NAME = ClassName.get("android.content.res", "TypedArray");
+    private final static ClassName ATTRIBUTE_SET_CLASS_NAME = ClassName.get("android.util", "AttributeSet");
+    private final static ClassName I_BARBER_SHOP_CLASS_NAME = ClassName.get("io.sweers.barber", "Barber", "IBarbershop");
 
     private final String classPackage;
     private final String className;
@@ -68,7 +69,7 @@ class Barbershop {
                 .addMethod(generateCheckParentMethod());
 
         if (parentBarbershop == null) {
-            barberShop.addSuperinterface(ParameterizedTypeName.get(ClassName.get(Barber.IBarbershop.class), TypeVariableName.get("T")));
+            barberShop.addSuperinterface(ParameterizedTypeName.get(I_BARBER_SHOP_CLASS_NAME, TypeVariableName.get("T")));
             barberShop.addField(FieldSpec.builder(WeakHashSet.class, "lastStyledTargets", Modifier.PROTECTED).initializer("new $T()", WeakHashSet.class).build());
         } else {
             barberShop.superclass(ParameterizedTypeName.get(ClassName.bestGuess(parentBarbershop), TypeVariableName.get("T")));
@@ -88,7 +89,7 @@ class Barbershop {
                 .addModifiers(Modifier.PUBLIC)
                 .returns(void.class)
                 .addParameter(TypeVariableName.get("T"), "target", Modifier.FINAL)
-                .addParameter(AttributeSet.class, "set", Modifier.FINAL)
+                .addParameter(ATTRIBUTE_SET_CLASS_NAME, "set", Modifier.FINAL)
                 .addParameter(int[].class, "attrs", Modifier.FINAL)
                 .addParameter(int.class, "defStyleAttr", Modifier.FINAL)
                 .addParameter(int.class, "defStyleRes", Modifier.FINAL);
@@ -110,11 +111,11 @@ class Barbershop {
 
         if (!styleableBindings.isEmpty()) {
             if (hasDefaults) {
-                builder.addStatement("$T res = target.getContext().getResources()", Resources.class);
+                builder.addStatement("$T res = target.getContext().getResources()", RESOURCES_CLASS_NAME);
             }
 
             // Proceed with obtaining the TypedArray if we got here
-            builder.addStatement("$T a = target.getContext().obtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes)", TypedArray.class);
+            builder.addStatement("$T a = target.getContext().obtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes)", TYPED_ARRAY_CLASS_NAME);
 
 
             builder.addCode("// Retrieve custom attributes\n");
@@ -368,7 +369,7 @@ class Barbershop {
 
     /**
      * Remove the last param if there are multiple, used for when we want to adapt a resource getter
-     * to one used with {@link Resources}
+     * to one used with {@link android.content.res.Resources}
      */
     private static String chompLastParam(String input) {
         int lastCommaIndex = input.lastIndexOf(',');

@@ -95,7 +95,7 @@ public class BarberProcessor extends AbstractProcessor {
         for (Map.Entry<TypeElement, Barbershop> entry : targetClassMap.entrySet()) {
             String parentClassFqcn = findParentFqcn(entry.getKey(), erasedTargetNames);
             if (parentClassFqcn != null) {
-                entry.getValue().setParentBarbershop(parentClassFqcn + Barber.SUFFIX);
+                entry.getValue().setParentBarbershop(parentClassFqcn + Config.SUFFIX);
             }
         }
 
@@ -115,7 +115,7 @@ public class BarberProcessor extends AbstractProcessor {
         if (barbershop == null) {
             String targetType = enclosingElement.getQualifiedName().toString();
             String classPackage = getPackageName(enclosingElement);
-            String className = getClassName(enclosingElement, classPackage) + Barber.SUFFIX;
+            String className = getClassName(enclosingElement, classPackage) + Config.SUFFIX;
             barbershop = new Barbershop(classPackage, className, targetType);
             targetClassMap.put(enclosingElement, barbershop);
             erasedTargetNames.add(enclosingElement.toString());

@@ -3,17 +3,9 @@ apply plugin: 'bintray-release'
 
 sourceCompatibility = 1.7
 
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java', '../api/src/main/java']
-        }
-    }
-}
-
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.squareup:javapoet:1.4.0'
+    compile project(':annotations')
+    compile 'com.squareup:javapoet:1.8.0'
     compile 'com.google.auto.service:auto-service:1.0-rc2'
 }
 
