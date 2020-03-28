@@ -1,3 +1,7 @@
+# DEPRECATED
+
+This project is no longer maintained. Consider using https://github.com/airbnb/paris
+
 [![Build Status](https://travis-ci.org/hzsweers/barber.svg?branch=master)](https://travis-ci.org/hzsweers/barber) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Barber-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1612) [![Maven Central](https://img.shields.io/maven-central/v/io.sweers.barber/barber-api.svg)](http://search.maven.org/#browse%7C-504042670)
 Barber
 ======
